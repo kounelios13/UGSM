@@ -2,3 +2,5 @@
 Ubuntu Graphical Service Manager is an electron app
 that helps me manage my active services in Ubuntu 17.04
 Simple and clear code
+
+This code was part of a private repo of mine
