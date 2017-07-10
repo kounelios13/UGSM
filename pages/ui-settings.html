@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="../css/bootstrap.min.css">
+        <link rel="stylesheet" href="../css/custom-bootbox.css">
+        <link rel="stylesheet" href="../css/index.css">
+        <script>
+        if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+        }
+        </script>
+        <script src="../javascript/jquery.min.js"></script>
+        <script src="../javascript/bootstrap.min.js"></script>
+        <script src="../javascript/bootbox.min.js"></script>
+        <script src="../javascript/ui-preferences.js"></script>
+        <script>
+        if (window.module) module = window.module;
+        </script>
+        <script>
+        
+        </script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="jumbotron">
+                <h1>Change ui settings</h1>
+                <p>Select fonts ,text colors and background images.To apply them press <code>Apply settings</code>.</p>
+            </div>
+            <h1>Font</h1>
+        <select id="font-list" class="form-control"></select>
+        <h1>Select application bg image</h1>
+        <div id="select-bg" class="btn btn-info">Select image</div>
+        <h1>Select text color</h1>
+        <input type="color" id = "color-selection">
+        <div class="row">
+            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
+                <div id="apply" class="btn btn-block btn-info">Apply settings</div>
+            </div>
+            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
+                <div id="delete-settings" class="btn btn-block btn-danger">Delete settings</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

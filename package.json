@@ -1,0 +1,22 @@
+{
+  "name": "gui_service_manager",
+  "version": "0.1.0",
+  "main": "main.js",
+  "scripts": {
+    "start": "sudo electron ."
+  },
+  "dependencies": {
+    "asar": "^0.13.0",
+    "dotenv": "^2.0.0",
+    "electron": "^1.4.13",
+    "electron-prebuilt": "^1.4.13",
+    "md5": "^2.1.0"
+  },
+  "description": "While searching a GUI service manager for Ubuntu 17.04 I realized that there isn't anything out there. That's why I will try to make one using Electron",
+  "keywords": [
+    "gui",
+    "services"
+  ],
+  "author": "kounelios13",
+  "license": "ISC"
+}

@@ -1,0 +1,14 @@
+td a {
+    padding: 4px;
+}
+
+td a:nth-child(2) {
+    color: red;
+}
+
+td a:nth-child(1) {
+    color: green;
+}
+td{ 
+    text-align:center;
+}

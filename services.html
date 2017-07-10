@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/custom-bootbox.css">
+    <link rel="stylesheet" href="./css/index.css">
+    <script>
+    if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }
+    </script>
+    <script src="./javascript/jquery.min.js"></script>
+    <script src="./javascript/bootstrap.min.js"></script>
+    <script src="./javascript/bootbox.min.js"></script>
+    <script src="./renderer.js"></script>
+    <script>
+    if (window.module) module = window.module;
+    </script>
+</head>
+
+<body>
+</body>
+    <div class="container-fluid">
+        <div class="page-header"><h1>Services Manager</h1></div>
+        <div class="jumbotron">
+            <p>
+                Manage system services with ease
+            </p>
+        </div>
+        <table class="table table-bordered" id="service-table">
+            <thead>
+                <tr>
+                    <th>Service Name</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</html>
