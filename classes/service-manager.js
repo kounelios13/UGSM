@@ -1,11 +1,11 @@
 const exec = require('child_process').exec;
 const Binder = require('./binder.js');
 let initMonitor = Symbol();
-class ServiceManager{
-    constructor(){
+class ServiceManager {
+    constructor() {
         this._services = [];
     }
-    requestServices(event,data){
+    requestServices(event, data) {
         exec("service --status-all", (err, stdout, stderr) => {
             if (!err) {
                 let services = stdout.split("\n");
@@ -40,16 +40,16 @@ class ServiceManager{
                     });
                 this._services = [...activeServices, ...inactiveServices];
             }
-            event.sender.send('receive-services',this._services);
+            event.sender.send('receive-services', this._services);
         });
     }
-    getActiveServices(){
-        return this._services.filter(s=>s.status == "active")
+    getActiveServices() {
+        return this._services.filter(s => s.status == "active")
     }
-    getInactiveServices(){
-        return this._services.filter(s=>s.status == "inactive")
+    getInactiveServices() {
+        return this._services.filter(s => s.status == "inactive")
     }
-    startService(event,service){
+    startService(event, service) {
         exec(`sudo service ${service} start`, (err, stdout, stderr) => {
             let response = {
                 status: "success",
@@ -59,9 +59,9 @@ class ServiceManager{
                 response.status = "failure";
             }
             event.sender.send('service-activate-status', response);
-        });       
+        });
     }
-    stopService(event,service){
+    stopService(event, service) {
         let command = `
             sudo service ${service} stop && service ${service} status | grep "Active"
         `;
@@ -87,25 +87,24 @@ class ServiceManager{
             event.sender.send('service-stop-status', response);
         });
     }
-    restartService(event,service){
-         exec(`sudo service ${service} restart`, (err, stdout, stderr) => {
+    restartService(event, service) {
+        let command = `sudo service ${service} restart && service ${service} status | grep "Active"`;
+        exec(command, (err, stdout, stderr) => {
             let response = {
                 status: "failure"
             };
-            exec(`service ${service} status | grep "Active"`, (err, stdout, stderr) => {
-                if (!err && stdout) {
-                    //stdout format
-                    //e.g. format of a running service
-                    //Active : active (running)
-                    status = stdout.split("(")[1].split(")")[0];
-                    let serviceRestarted = status == "running";
-                    if (serviceRestarted) {
-                        response.status = "success";
-                    }
-                    event.sender.send('service-restart-status', response);
+            if (!err && stdout) {
+                //stdout format
+                //e.g. format of a running service
+                //Active : active (running)
+                status = stdout.split("(")[1].split(")")[0];
+                let serviceRestarted = status == "running";
+                if (serviceRestarted) {
+                    response.status = "success";
                 }
-            });
-        });    
+                event.sender.send('service-restart-status', response);
+            }
+        });
     }
 }
 module.exports = ServiceManager;
