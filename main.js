@@ -124,8 +124,8 @@ function createWindow() {
         slashes: true
     }));
     uiPreferencesWin = new BrowserWindow({
-        height: 400,
-        width: 400,
+        height: 800,
+        width: 1200,
         title: "UI settings",
         show: false,
         parent: win,
