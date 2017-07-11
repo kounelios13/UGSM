@@ -126,7 +126,7 @@ function createWindow() {
     uiPreferencesWin = new BrowserWindow({
         height: 400,
         width: 400,
-        titile: "UI settings",
+        title: "UI settings",
         show: false,
         parent: win,
         icon: `${__dirname}/icons/ugsm256x256.png`
