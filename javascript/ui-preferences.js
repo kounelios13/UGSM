@@ -16,29 +16,30 @@ $(document).ready(function() {
     var cellFontSizeSlider = document.getElementById('cell-font-size');
     //Check if there are any user preferences to load
     let userPrefs = JSON.parse(localStorage.getItem('ui-preferences'));
-    if(userPrefs){
-        //Good 
-        //Loaded user preferences.Now apply them
-        //@TODO
-        //Load font and change the corresponding
-        //select box
-        let tableCellSize = userPrefs['table-cell-size'] || 14;
-        let textColor = userPrefs['color'];
-        console.log(textColor)
-        cellFontSizeSlider.value = tableCellSize;
-        $("html,body").css(userPrefs);
-        $("table").css("font-size",`${tableCellSize}px`);
-        //This fails
-        //Reason textColor is in rgb format while 
-        //color input type accepts hex format colors(e.g. #aabbcc)
-        $("#color-selection").val(rgb2hex(textColor));
-    }
+    //First create the select box
     fonts.forEach(f => {
         let option = document.createElement('option');
         option.innerText = f;
         fragment.appendChild(option);
     });
     fontList.appendChild(fragment);
+    //Now you can check for preferences and select  saved font from font-list
+    if(userPrefs){
+        //Good 
+        //Loaded user preferences.Now apply them
+        let tableCellSize = userPrefs['table-cell-size'] || 14;
+        let textColor = userPrefs['color'];
+        let fontName = userPrefs['font-family'];
+        let fontIndex = fonts.indexOf(fontName);
+        if(fontIndex != -1){
+            fontList[fontIndex].selected = true;
+        }
+        cellFontSizeSlider.value = tableCellSize;
+        $("html,body").css(userPrefs);
+        $("table").css("font-size",`${tableCellSize}px`);
+        //Use only hex colors
+        $("#color-selection").val(rgb2hex(textColor));
+    }
     $("#select-bg").on("click",function(){
         ipcRenderer.send('show-open-dialog')
     });
@@ -65,6 +66,7 @@ $(document).ready(function() {
         ipcRenderer.send('apply-ui-settings',cssData);
         //Let's save our css properties to localStorage
         localStorage.setItem('ui-preferences',JSON.stringify(cssData));
+        success('User preferences have been saved');
     });
     $("#delete-settings").on("click",function(){
         confirm({

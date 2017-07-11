@@ -160,7 +160,9 @@ function restartService(service) {
 $(document).ready(function() {
     if (localStorage.getItem("ui-preferences")) {
         let cssData = JSON.parse(localStorage.getItem("ui-preferences"));
+        let cellFontSize = cssData['table-cell-size'];
         $("html,body").css(cssData);
+        $("table").css("font-size",`${cellFontSize}px`);
     }
     info('Please wait while loading system services');
     ipcRenderer.send('request-services');
