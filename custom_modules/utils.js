@@ -38,7 +38,11 @@ let confirm = options => {
 let rgb2hex = color => {
     var rgbValues = color.split("(")[1].split(")")[0].split(",");
     return `#` + rgbValues.map(col => {
+        //Covnvert each rgb value to hex format
+        //E.g. 255 --> ff
         col = parseInt(col).toString(16);
+        //make sure that hex value is not single character
+        //e.g. a becomes 09
         return (col.length == 1) ? `${0}col` : col;
     }).join('');
 };
