@@ -1,0 +1,21 @@
+input[type='range'].ugsm {
+  position: relative;
+  z-index: 1000;
+  -webkit-appearance: none;
+  height: 15px;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+  outline: none;
+  background: rgba(5, 5, 5, 0.8);
+  border-radius: 6px;
+}
+input[type='range'].ugsm::-webkit-slider-thumb {
+  background: rgba(0, 0, 0, 0.8);
+  -webkit-appearance: none;
+  /* background-color:black; */
+  border-radius: 100px;
+  height: 30px;
+  width: 30px;
+  box-shadow: 0 0 4px 4px rgba(250, 10, 10, 0.8);
+}
+
+/*# sourceMappingURL=range.css.map */
