@@ -29,11 +29,7 @@ var createServiceLink = (type, name) => {
 //@param data an array of service objects
 var createServiceListTable = (data) => {
     if (!data.length) {
-        bootbox.alert({
-            title: "Error",
-            message: "Fuck something happened",
-            className: "dialog-error"
-        })
+        error('Something happened.No data received.Probably unsupported platform');
         return;
     }
     var fragment = document.createDocumentFragment();
