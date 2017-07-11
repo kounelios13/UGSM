@@ -35,6 +35,7 @@ let confirm = options => {
     }, options);
     bootbox.confirm(options);
 };
+window.confirm = confirm;
 let rgb2hex = color => {
     var rgbValues = color.split("(")[1].split(")")[0].split(",");
     return `#` + rgbValues.map(col => {
