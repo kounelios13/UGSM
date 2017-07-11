@@ -1,6 +1,11 @@
 const {
     ipcRenderer
 } = require('electron');
+const {
+    success,
+    error,
+    info
+} = require('./custom_modules/utils.js');
 const Binder = require('./classes/binder.js');
 var services = [];
 //Utility function that will help us
@@ -62,34 +67,27 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
         bootbox.hideAll();
     },
     'service-stop-status': (event, data) => {
-        let options = {
-            title: data.status == "success" ? "Success" : "Error",
-            message: data.status == "success" ? "Service has been stopped" : "Couldn't stop service",
-            className: `dialog-${data.status=="success"?"success":"error"}`
-        };
-        bootbox.alert(options);
         if (data.status == "success") {
             updateServiceStatus(data.name, "inactive");
+            success('Service has been stopped');
+        }else{
+            error(`Couldn't stop service`);
         }
     },
     'service-activate-status': (event, data) => {
-        let options = {
-            title: data.status == "success" ? "Success" : "Error",
-            message: data.status == "success" ? "Service has been started" : "Couldn't start service",
-            className: `dialog-${data.status=="success"?"success":"error"}`
-        };
-        bootbox.alert(options);
         if (data.status == "success") {
+            success('Service has been started');
             updateServiceStatus(data.name, "active");
+        } else {
+            error(`Couldn't start service`);
         }
     },
     'service-restart-status': (event, data) => {
-        let options = {
-            title: data.status == "success" ? "Success" : "Error",
-            message: data.status == "success" ? "Service has been restarted" : "Couldn't restart service",
-            className: `dialog-${data.status=="success"?"success":"error"}`
-        };
-        bootbox.alert(options);
+        if (data.status == "success") {
+            success('Service has been restarted');
+        } else {
+            error(`Couldn't restart service`);
+        }
     }
 });
 ipcRendererBinder.addEvents({
@@ -115,14 +113,12 @@ ipcRendererBinder.addEvents({
         createServiceListTable(curServices);
     },
     'request-exit-confirmation': () => {
-        bootbox.confirm({
-            title: 'Warning',
+        confirm({
             message: 'Are you sure you want to quit UGSM?',
-            className: 'dialog-warning',
             callback: (answer) => {
                 ipcRenderer.send('exit-confirmation-answer', answer);
             }
-        })
+        });
     },
     'apply-new-ui-settings': (event, data) => {
         $("html,body").css(data)
@@ -153,16 +149,14 @@ function startService(service) {
     ipcRenderer.send('start-service', service);
 }
 function stopService(service) {
-    bootbox.confirm({
-        title: "Warning",
+    confirm({
         message: `Are you sure you want to stop ${service} service?`,
         callback: (answer) => {
             if (answer) {
                 ipcRenderer.send('stop-service', service);
             }
-        },
-        className: "dialog-warning"
-    })
+        }
+    });
 }
 function restartService(service) {
     ipcRenderer.send('restart-service', service);
@@ -172,11 +166,7 @@ $(document).ready(function() {
         let cssData = JSON.parse(localStorage.getItem("ui-preferences"));
         $("html,body").css(cssData);
     }
-    bootbox.alert({
-        title: "Info",
-        message: "Please wait while loading system services",
-        className: "dialog-info"
-    });
+    info('Please wait while loading system services');
     ipcRenderer.send('request-services');
     $("#filter-by").click(function() {
         bootbox.alert({
