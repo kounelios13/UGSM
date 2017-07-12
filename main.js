@@ -5,42 +5,41 @@ const {
     ipcMain,
     dialog
 } = require('electron');
-const path = require('path');
-const url = require('url');
-const fs = require('fs');
+const path  = require('path');
+const url   = require('url');
+const fs    = require('fs');
 const Binder = require('./classes/binder.js');
 const ServiceManagerBuilder = require('./classes/service-manager.js');
 let win = null;
 let uiPreferencesWin = null;
 let serviceManager = new ServiceManagerBuilder();
+var allowAppTermination = false;
 function createMainWindowMenuBar() {
     const menuTemplate = [{
         label: 'File',
         submenu: [{
             label: 'Exit UGSM',
             accelerator: 'CmdOrCtrl+Q',
-            click: () => {
-                win.webContents.send('request-exit-confirmation');
-            }
+            role: 'quit'
         }]
-    },{
-        label:'Edit',
-        submenu:[{
-            role:'copy'
-        },{
-            role:'paste'
-        },{
-            role:'selectall'
-        },{
-            role:'delete'
+    }, {
+        label: 'Edit',
+        submenu: [{
+            role: 'copy'
+        }, {
+            role: 'paste'
+        }, {
+            role: 'selectall'
+        }, {
+            role: 'delete'
         }]
     }, {
         label: 'View',
         submenu: [{
             label: 'Show only active services',
-            accelerator:'Ctrl+Shift+1',
-            click: () => {
-                win.webContents.send('filter-services', {
+            accelerator: 'Ctrl+Shift+1',
+            click: (_window) => {
+                window.webContents.send('filter-services', {
                     //View 0 means
                     //Show only active services
                     view: 0
@@ -48,7 +47,7 @@ function createMainWindowMenuBar() {
             }
         }, {
             label: 'Show only inactive services',
-            accelerator:'Ctrl+Shift+2',
+            accelerator: 'Ctrl+Shift+2',
             click: () => {
                 win.webContents.send('filter-services', {
                     //View 1 means show only 
@@ -58,7 +57,7 @@ function createMainWindowMenuBar() {
             }
         }, {
             label: 'Show all services',
-            accelerator:'Ctrl+Shift+3',
+            accelerator: 'Ctrl+Shift+3',
             click: () => {
                 win.webContents.send('filter-services', {
                     //Show everything like
@@ -69,10 +68,20 @@ function createMainWindowMenuBar() {
         }, {
             type: 'separator'
         }, {
+            label: 'Toggle Developer Tools',
+            accelerator: 'CmdOrCtrl+Shift+I',
+            click: (_, window) => {
+                if (window) {
+                    window.webContents.openDevTools();
+                }
+            }
+        }, {
+            type: 'separator'
+        }, {
             label: 'Restart UGSM',
             accelerator: 'CmdOrCtrl+R',
-            click: () => {
-                if(uiPreferencesWin.isVisible()){
+            click: (_, window) => {
+                if (uiPreferencesWin.isVisible()) {
                     //When soft restarting apprelication
                     //hide ui preferences window
                     //but don't destroy it
@@ -80,12 +89,12 @@ function createMainWindowMenuBar() {
                     //If in a future version I decide to switch
                     //to hard reset I will have to restart ui preferences window()
                 }
-                win.reload();
+                window.reload();
             }
-        },{
+        }, {
             type: 'separator'
-        },{
-            role:'togglefullscreen'
+        }, {
+            role: 'togglefullscreen'
         }]
     }, {
         label: 'Preferences',
@@ -123,6 +132,19 @@ function createWindow() {
         protocol: 'file:',
         slashes: true
     }));
+    //Prevent user from exiting UGSM
+    //without confirming
+    win.on('close', (e) => {
+        if (!allowAppTermination) {
+            //Means that close event hasn't been triggered again
+            e.preventDefault();
+            win.webContents.send('request-exit-confirmation');
+        }else{
+            //close event has been triggered
+            //now exit
+            app.quit();
+        }
+    });
     uiPreferencesWin = new BrowserWindow({
         height: 800,
         width: 1200,
@@ -157,39 +179,46 @@ const appBinder = new Binder(app, {
     }
 });
 const ipcMainBinder = new Binder(ipcMain, {
-    'request-services':(event,data)=>{
-        serviceManager.requestServices(event,data);
+    'request-services': (event, data) => {
+        serviceManager.requestServices(event, data);
     },
     'start-service': (event, service) => {
-        serviceManager.startService(event,service);
+        serviceManager.startService(event, service);
     },
     'stop-service': (event, service) => {
-        serviceManager.stopService(event,service);
+        serviceManager.stopService(event, service);
     },
     'restart-service': (event, service) => {
-        serviceManager.restartService(event,service);
+        serviceManager.restartService(event, service);
     },
     'exit-confirmation-answer': (_, answer) => {
         if (answer === true) {
+            //Important
+            //If not set to true the app won't be able to exit
+            //since close event will always be triggered without us being able to stop
+            allowAppTermination = true;
             app.quit();
         }
     }
 });
 ipcMainBinder.addEvents({
-    'show-open-dialog': (event,_) => {
+    'show-open-dialog': (event, _) => {
         dialog.showOpenDialog({
             properties: ['openFile'],
-            filters:[{name: 'Images', extensions: ['jpg', 'png', 'bmp']}]
-        },(data)=>{
-            if(data && data.length){
+            filters: [{
+                name: 'Images',
+                extensions: ['jpg', 'png', 'bmp']
+            }]
+        }, (data) => {
+            if (data && data.length) {
                 //data is an array containing a single item
                 //which is the path of the selected image
-                event.sender.send('receive-selected-image',data[0]);
+                event.sender.send('receive-selected-image', data[0]);
             }
         })
     },
-    'apply-ui-settings':(event,data)=>{
+    'apply-ui-settings': (event, data) => {
         //Apply new css
-        win.webContents.send('apply-new-ui-settings',data);
+        win.webContents.send('apply-new-ui-settings', data);
     }
 });
