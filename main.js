@@ -9,10 +9,8 @@ const path  = require('path');
 const url   = require('url');
 const fs    = require('fs');
 const Binder = require('./classes/binder.js');
-const ServiceManagerBuilder = require('./classes/service-manager.js');
 let win = null;
 let uiPreferencesWin = null;
-let serviceManager = new ServiceManagerBuilder();
 var allowAppTermination = false;
 function createMainWindowMenuBar() {
     const menuTemplate = [{
@@ -38,7 +36,7 @@ function createMainWindowMenuBar() {
         submenu: [{
             label: 'Show only active services',
             accelerator: 'Ctrl+Shift+1',
-            click: (_window) => {
+            click: (_,window) => {
                 window.webContents.send('filter-services', {
                     //View 0 means
                     //Show only active services
@@ -48,8 +46,8 @@ function createMainWindowMenuBar() {
         }, {
             label: 'Show only inactive services',
             accelerator: 'Ctrl+Shift+2',
-            click: () => {
-                win.webContents.send('filter-services', {
+            click: (_,window) => {
+                window.webContents.send('filter-services', {
                     //View 1 means show only 
                     //inactive services
                     view: 1
@@ -58,8 +56,8 @@ function createMainWindowMenuBar() {
         }, {
             label: 'Show all services',
             accelerator: 'Ctrl+Shift+3',
-            click: () => {
-                win.webContents.send('filter-services', {
+            click: (_,window) => {
+                window.webContents.send('filter-services', {
                     //Show everything like
                     //there is no tomorrow :p
                     view: 2
@@ -179,18 +177,6 @@ const appBinder = new Binder(app, {
     }
 });
 const ipcMainBinder = new Binder(ipcMain, {
-    'request-services': (event, data) => {
-        serviceManager.requestServices(event, data);
-    },
-    'start-service': (event, service) => {
-        serviceManager.startService(event, service);
-    },
-    'stop-service': (event, service) => {
-        serviceManager.stopService(event, service);
-    },
-    'restart-service': (event, service) => {
-        serviceManager.restartService(event, service);
-    },
     'exit-confirmation-answer': (_, answer) => {
         if (answer === true) {
             //Important
