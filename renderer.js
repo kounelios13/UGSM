@@ -1,12 +1,17 @@
 const {
-    ipcRenderer
-} = require('electron');
-const {
     success,
     error,
     info
 } = require('./custom_modules/utils.js');
+const {
+    ipcRenderer
+} = require('electron');
+const EventEmmiter = require('events');
 const Binder = require('./classes/binder.js');
+const ServiceManagerBuilder = require('./classes/service-manager.js');
+const IllegalArgumentError = require('./classes/illegalArgumentError.js');
+var serviceEmmiter = new EventEmmiter();
+var serviceManager = new ServiceManagerBuilder(serviceEmmiter);
 var services = [];
 //Utility function that will help us
 //create the 3 types of links we need for our service list(Start, Stop,Restart)
@@ -56,29 +61,30 @@ var createServiceListTable = (data) => {
     document.querySelector("tbody").innerHTML = "";
     document.querySelector("tbody").appendChild(fragment);
 };
-var ipcRendererBinder = new Binder(ipcRenderer, {
-    'receive-services': (event, data) => {
-        services = data;
-        createServiceListTable(data);
-        bootbox.hideAll();
-    },
-    'service-stop-status': (event, data) => {
-        if (data.status == "success") {
-            updateServiceStatus(data.name, "inactive");
+serviceEmmiter.on('receive-services', (data) => {
+    services = data;
+    createServiceListTable(services);
+    bootbox.hideAll();
+});
+var serviceEmmiterBinder = new Binder(serviceEmmiter, {
+    'service-stop-status':(data)=>{
+        if(data.status == 'success'){
             success('Service has been stopped');
+            updateServiceStatus(data.name,'inactive');
         }else{
             error(`Couldn't stop service`);
         }
     },
-    'service-activate-status': (event, data) => {
+    'service-activate-status': (data) => {
         if (data.status == "success") {
+            console.log(data)
             success('Service has been started');
             updateServiceStatus(data.name, "active");
         } else {
             error(`Couldn't start service`);
         }
     },
-    'service-restart-status': (event, data) => {
+    'service-restart-status': (data) => {
         if (data.status == "success") {
             success('Service has been restarted');
         } else {
@@ -86,7 +92,7 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
         }
     }
 });
-ipcRendererBinder.addEvents({
+var ipcRendererBinder = new Binder(ipcRenderer, {
     'filter-services': (event, data) => {
         if (!services.length) {
             return;
@@ -97,13 +103,13 @@ ipcRendererBinder.addEvents({
         let curServices = null;
         switch (data.view) {
             case activeServices:
-                curServices = services.filter(s => s.status == "active");
+                curServices = serviceManager.getActiveServices();
                 break;
             case inactiveServices:
-                curServices = services.filter(s => s.status == "inactive");
+                curServices = serviceManager.getInactiveServices();
                 break;
             case allServices:
-                curServices = services;
+                curServices = serviceManager.getAllServices();
                 break;
         }
         createServiceListTable(curServices);
@@ -141,31 +147,34 @@ var updateServiceStatus = (serviceName, status) => {
         }
     }
 };
+
 function startService(service) {
-    ipcRenderer.send('start-service', service);
+    serviceManager.startService(service);
 }
+
 function stopService(service) {
     confirm({
         message: `Are you sure you want to stop ${service} service?`,
         callback: (answer) => {
             if (answer) {
-                ipcRenderer.send('stop-service', service);
+                serviceManager.stopService(service);
             }
         }
     });
 }
+
 function restartService(service) {
-    ipcRenderer.send('restart-service', service);
+    serviceManager.restartService(service);
 }
 $(document).ready(function() {
     if (localStorage.getItem("ui-preferences")) {
         let cssData = JSON.parse(localStorage.getItem("ui-preferences"));
         let cellFontSize = cssData['table-cell-size'];
         $("html,body").css(cssData);
-        $("table").css("font-size",`${cellFontSize}px`);
+        $("table").css("font-size", `${cellFontSize}px`);
     }
     info('Please wait while loading system services');
-    ipcRenderer.send('request-services');
+    serviceManager.requestServices();
     $("#filter-by").click(function() {
         bootbox.alert({
             title: "Filter services",
