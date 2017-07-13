@@ -3,15 +3,54 @@ const {
     BrowserWindow,
     Menu,
     ipcMain,
-    dialog
+    dialog,
+    Tray
 } = require('electron');
-const path  = require('path');
-const url   = require('url');
-const fs    = require('fs');
+const path = require('path');
+const url = require('url');
+const fs = require('fs');
 const Binder = require('./classes/binder.js');
 let win = null;
 let uiPreferencesWin = null;
 var allowAppTermination = false;
+let trayIcon = null;
+function createTrayIcon() {
+    trayIcon = new Tray('icons/ugsm256x256.png');
+    const trayMenuTemplate = [{
+        label:'UI settings',
+        click:()=>{
+            uiPreferencesWin.show();
+        }
+    },{
+        type:'separator'
+    },{
+        label: 'Maximize',
+        click:(_,window)=>{
+            win.maximize();
+        }
+    }, {
+        label: 'Minimize',
+        click:(_,window)=>{
+            win.minimize();
+        }
+    }, {
+        label: 'Restart UGSM',
+        click:(_,window)=>{
+            if(uiPreferencesWin.isVisible()){
+                uiPreferencesWin.hide();
+            }
+            window.reload();
+        }
+    }, {
+        type: 'separator'
+    }, {
+        label: 'Quit UGSM',
+        role: 'quit'
+    }];
+    const trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
+    trayIcon.setContextMenu(trayMenu);
+}
+
 function createMainWindowMenuBar() {
     const menuTemplate = [{
         label: 'File',
@@ -36,7 +75,7 @@ function createMainWindowMenuBar() {
         submenu: [{
             label: 'Show only active services',
             accelerator: 'Ctrl+Shift+1',
-            click: (_,window) => {
+            click: (_, window) => {
                 window.webContents.send('filter-services', {
                     //View 0 means
                     //Show only active services
@@ -46,7 +85,7 @@ function createMainWindowMenuBar() {
         }, {
             label: 'Show only inactive services',
             accelerator: 'Ctrl+Shift+2',
-            click: (_,window) => {
+            click: (_, window) => {
                 window.webContents.send('filter-services', {
                     //View 1 means show only 
                     //inactive services
@@ -56,7 +95,7 @@ function createMainWindowMenuBar() {
         }, {
             label: 'Show all services',
             accelerator: 'Ctrl+Shift+3',
-            click: (_,window) => {
+            click: (_, window) => {
                 window.webContents.send('filter-services', {
                     //Show everything like
                     //there is no tomorrow :p
@@ -118,7 +157,9 @@ function preserveWindow(window) {
         window.hide();
     });
 }
+
 function createWindow() {
+    createTrayIcon();
     win = new BrowserWindow({
         height: 800,
         width: 1200,
@@ -137,7 +178,7 @@ function createWindow() {
             //Means that close event hasn't been triggered again
             e.preventDefault();
             win.webContents.send('request-exit-confirmation');
-        }else{
+        } else {
             //close event has been triggered
             //now exit
             app.quit();
