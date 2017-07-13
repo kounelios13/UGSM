@@ -1,6 +1,6 @@
 {
   "name": "gui_service_manager",
-  "version": "0.1.0",
+  "version": "1.0.3",
   "main": "main.js",
   "scripts": {
     "start": "sudo electron ."
@@ -15,6 +15,8 @@
   "description": "While searching a GUI service manager for Ubuntu 17.04 I realized that there isn't anything out there. That's why I will try to make one using Electron",
   "keywords": [
     "gui",
+    "services",
+    "ubuntu",
     "services"
   ],
   "author": "kounelios13",

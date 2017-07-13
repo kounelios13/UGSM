@@ -17,26 +17,26 @@ let trayIcon = null;
 function createTrayIcon() {
     trayIcon = new Tray('icons/ugsm256x256.png');
     const trayMenuTemplate = [{
-        label:'UI settings',
-        click:()=>{
+        label: 'UI settings',
+        click: () => {
             uiPreferencesWin.show();
         }
-    },{
-        type:'separator'
-    },{
+    }, {
+        type: 'separator'
+    }, {
         label: 'Maximize',
-        click:(_,window)=>{
+        click: (_, window) => {
             win.maximize();
         }
     }, {
         label: 'Minimize',
-        click:(_,window)=>{
+        click: (_, window) => {
             win.minimize();
         }
     }, {
         label: 'Restart UGSM',
-        click:(_,window)=>{
-            if(uiPreferencesWin.isVisible()){
+        click: (_, window) => {
+            if (uiPreferencesWin.isVisible()) {
                 uiPreferencesWin.hide();
             }
             window.reload();
@@ -50,7 +50,6 @@ function createTrayIcon() {
     const trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
     trayIcon.setContextMenu(trayMenu);
 }
-
 function createMainWindowMenuBar() {
     const menuTemplate = [{
         label: 'File',
@@ -157,13 +156,12 @@ function preserveWindow(window) {
         window.hide();
     });
 }
-
 function createWindow() {
     createTrayIcon();
     win = new BrowserWindow({
         height: 800,
         width: 1200,
-        title: "UGSM v1.0.2",
+        title: "UGSM v1.0.3",
         icon: `${__dirname}/icons/ugsm256x256.png`
     });
     win.loadURL(url.format({
