@@ -10,9 +10,12 @@ const EventEmmiter = require('events');
 const Binder = require('./classes/binder.js');
 const ServiceManagerBuilder = require('./classes/service-manager.js');
 const IllegalArgumentError = require('./classes/illegalArgumentError.js');
+const ThemeManagerBuilder = require('./classes/themeManager.js');
+const themeManager = new ThemeManagerBuilder(JSON.parse(localStorage.getItem('theme-manager-files')));
 var serviceEmmiter = new EventEmmiter();
 var serviceManager = new ServiceManagerBuilder(serviceEmmiter);
 var services = [];
+
 //Utility function that will help us
 //create the 3 types of links we need for our service list(Start, Stop,Restart)
 //@param type Type of link to create(start,stop,restart)
@@ -67,11 +70,11 @@ serviceEmmiter.on('receive-services', (data) => {
     bootbox.hideAll();
 });
 var serviceEmmiterBinder = new Binder(serviceEmmiter, {
-    'service-stop-status':(data)=>{
-        if(data.status == 'success'){
+    'service-stop-status': (data) => {
+        if (data.status == 'success') {
             success('Service has been stopped');
-            updateServiceStatus(data.name,'inactive');
-        }else{
+            updateServiceStatus(data.name, 'inactive');
+        } else {
             error(`Couldn't stop service`);
         }
     },
@@ -124,6 +127,17 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
     },
     'apply-new-ui-settings': (event, data) => {
         $("html,body").css(data)
+    },
+    'select-theme': () => {
+        showAvailableThemes();
+    },
+    'receive-selected-theme': (event, data) => {
+        //Yeah new theme received
+        //Add that to theme select box
+        $('#theme-select').append(`<option>${data}</option>`);
+        //Now we need to save that theme into localStorage
+        themeManager.addTheme(data);
+        themeManager.saveThemes();
     }
 });
 //Utility function that finds a service by its name and updates its status
@@ -166,7 +180,51 @@ function stopService(service) {
 function restartService(service) {
     serviceManager.restartService(service);
 }
+//Let the user choose a css file to use 
+//This way a user can create its own theme
+function showAvailableThemes() {
+    let themes = themeManager.getThemes();
+    let selectBox = `<select class='form-control' id='theme-select'>`;
+    themes.forEach(theme => {
+        selectBox += `<option>${theme}</option>`
+    });
+    selectBox += `</div>`;
+    bootbox.dialog({
+        title: 'Choose a theme',
+        message: selectBox,
+        buttons: {
+            addTheme: {
+                label: 'Add new theme',
+                className: 'btn-info',
+                callback: () => {
+                    //Talk to main
+                    //Tell her that we need to select a theme file(css)
+                    ipcRenderer.send('open-theme-selection-dialog');
+                    return false;
+
+                }
+            },
+            cancel: {},
+            ok: {
+                label: 'Apply theme',
+                className: 'btn-success',
+                callback: () => {
+                    let theme = $("#theme-select").val();
+                    if(theme){
+                        themeManager.setSelectedTheme(theme)
+                        themeManager.saveThemes();
+                        let styleSheet = document.createElement('link');
+                        styleSheet.href = theme;
+                        styleSheet.rel = 'stylesheet';
+                        document.head.appendChild(styleSheet);
+                    }
+                }
+            }
+        }
+    });
+}
 $(document).ready(function() {
+    themeManager.applySelectedTheme(document.head);
     if (localStorage.getItem("ui-preferences")) {
         let cssData = JSON.parse(localStorage.getItem("ui-preferences"));
         let cellFontSize = cssData['table-cell-size'];
@@ -207,4 +265,5 @@ $(document).ready(function() {
             }
         });
     });
+
 });

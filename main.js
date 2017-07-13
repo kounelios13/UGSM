@@ -142,8 +142,10 @@ function createMainWindowMenuBar() {
                 }
             }
         }, {
-            label: 'Application settings',
-            enabled: false
+            label: 'Select theme',
+            click:(_,window)=>{
+                window.webContents.send('select-theme');
+            }
         }]
     }];
     const menu = Menu.buildFromTemplate(menuTemplate);
@@ -240,7 +242,22 @@ ipcMainBinder.addEvents({
                 //which is the path of the selected image
                 event.sender.send('receive-selected-image', data[0]);
             }
-        })
+        });
+    },
+    'open-theme-selection-dialog':(event,_)=>{
+        dialog.showOpenDialog({
+            properties: ['openFile'],
+            filters: [{
+                name: 'Css(StyleSheets)',
+                extensions: ['css']
+            }]
+        }, (data) => {
+            if (data && data.length) {
+                //data is an array containing a single item
+                //which is the path of the selected theme(css file)
+                event.sender.send('receive-selected-theme', data[0]);
+            }
+        });
     },
     'apply-ui-settings': (event, data) => {
         //Apply new css
