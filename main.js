@@ -164,6 +164,7 @@ function createWindow() {
         height: 800,
         width: 1200,
         title: "UGSM v1.0.3",
+        show:false,
         icon: `${__dirname}/icons/ugsm256x256.png`
     });
     win.loadURL(url.format({
@@ -218,6 +219,9 @@ const appBinder = new Binder(app, {
     }
 });
 const ipcMainBinder = new Binder(ipcMain, {
+    'show-application':()=>{
+        win.show();
+    },
     'exit-confirmation-answer': (_, answer) => {
         if (answer === true) {
             //Important

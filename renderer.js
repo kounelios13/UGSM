@@ -231,6 +231,8 @@ $(document).ready(function() {
         $("html,body").css(cssData);
         $("table").css("font-size", `${cellFontSize}px`);
     }
+    //Loaded all css now show the window
+    ipcRenderer.send('show-application');
     info('Please wait while loading system services');
     serviceManager.requestServices();
     $("#filter-by").click(function() {
