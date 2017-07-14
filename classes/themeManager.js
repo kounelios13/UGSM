@@ -20,7 +20,17 @@ class ThemeManager {
         this.themes[indexToRemove] = null;
         //Now we need to remove null valus from our themes array
         this.themes = this.themes.filter(e => e != null);
-        //Save changes back to localStorage
+        //Check if the theme we removed was the selectedTheme
+        if(this.selectedTheme == theme){
+            this.selectedTheme = null;
+        }
+        //This is the only case we force saveThemes()
+        //The reason is the following
+        //User decides to delete a theme but before they close the relevant theme-selection modal
+        //they decide to restart the application and they see that the theme they remove is still on their list
+        //because saveThemes() was executed only after closing theme-selection-modal
+        this.saveThemes();
+
     }
     getThemes() {
         return this.themes;
@@ -29,11 +39,11 @@ class ThemeManager {
         this.selectedTheme = theme;
     }
     getSelectedTheme() {
-            return this.selectedTheme;
-        }
-        //Here comes an intesave resting idea
-        //Don't saveThemes() any time you add or remove themes
-        //saveThemes() only when the boostrap modal that shows the themes closes
+        return this.selectedTheme;
+    }
+    getSelectedThemeIndex() {
+        return this.themes.indexOf(this.selectedTheme);
+    }
     saveThemes() {
         let info = {
             themes: this.themes,
@@ -42,14 +52,13 @@ class ThemeManager {
         localStorage.setItem('theme-manager-files', JSON.stringify(info));
     }
     clear() {
-            this.themes = [];
-            this.setSelectedTheme = null;
-            localStorage.removeItem('theme-manager-files');
-        }
-        //Creates a link tag and attaches it to head
+        this.themes = [];
+        this.setSelectedTheme = null;
+        localStorage.removeItem('theme-manager-files');
+    }
     applySelectedTheme() {
-        if (this.setSelectedTheme) {
-            //Find if we have recreated a link tag before so we can change its href attribute
+        if (this.selectedTheme) {
+            //Find if we have created a link tag before so we can change its href attribute
             if (document.getElementById('external-theme')) {
                 document.getElementById('external-theme').href = this.selectedTheme;
             } else {
