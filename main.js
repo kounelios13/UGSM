@@ -136,14 +136,18 @@ function createMainWindowMenuBar() {
         label: 'Preferences',
         submenu: [{
             label: 'UI settings',
+            accelerator:'CmdOrCtrl+U',
             click: () => {
                 if (!uiPreferencesWin.isVisible()) {
                     uiPreferencesWin.show();
                 }
             }
         }, {
-            label: 'Application settings',
-            enabled: false
+            label: 'Select Theme',
+            accelerator:'CmdOrCtrl+T',
+            click:(_,window)=>{
+                window.webContents.send('select-theme');
+            }
         }]
     }];
     const menu = Menu.buildFromTemplate(menuTemplate);
@@ -162,6 +166,7 @@ function createWindow() {
         height: 800,
         width: 1200,
         title: "UGSM v1.0.3",
+        show:false,
         icon: `${__dirname}/icons/ugsm256x256.png`
     });
     win.loadURL(url.format({
@@ -216,6 +221,9 @@ const appBinder = new Binder(app, {
     }
 });
 const ipcMainBinder = new Binder(ipcMain, {
+    'show-application':()=>{
+        win.show();
+    },
     'exit-confirmation-answer': (_, answer) => {
         if (answer === true) {
             //Important
@@ -240,7 +248,22 @@ ipcMainBinder.addEvents({
                 //which is the path of the selected image
                 event.sender.send('receive-selected-image', data[0]);
             }
-        })
+        });
+    },
+    'open-theme-selection-dialog':(event,_)=>{
+        dialog.showOpenDialog({
+            properties: ['openFile'],
+            filters: [{
+                name: 'CSS(Stylesheets)',
+                extensions: ['css']
+            }]
+        }, (data) => {
+            if (data && data.length) {
+                //data is an array containing a single item
+                //which is the path of the selected theme(css file)
+                event.sender.send('receive-selected-theme', data[0]);
+            }
+        });
     },
     'apply-ui-settings': (event, data) => {
         //Apply new css

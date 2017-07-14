@@ -2,11 +2,13 @@ const exec = require('child_process').exec;
 const Binder = require('./binder.js');
 class ServiceManager {
     constructor(emmiter) {
+        if(emmiter === undefined || typeof emmiter != 'object'){
+            throw new Error('Expected an instance of EventEmmiter as 1 argument');
+        }
         this._services = [];
         this._emmiter = emmiter;
     }
     requestServices(event, data) {
-        console.log('Entering hell')
         exec("service --status-all", (err, stdout, stderr) => {
             if (!err) {
                 let services = stdout.split("\n");

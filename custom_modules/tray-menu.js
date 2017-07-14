@@ -4,5 +4,5 @@ const {
     Menu,
 } = require('electron');
 const path = require('path');
-const trayIcon = new Tray('icons/ugsm256x256.png');
+const trayIcon = new Tray(`${__dirname}/icons/ugsm256x256.png`);
 module.exports = trayIcon;
