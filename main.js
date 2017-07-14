@@ -136,13 +136,15 @@ function createMainWindowMenuBar() {
         label: 'Preferences',
         submenu: [{
             label: 'UI settings',
+            accelerator:'CmdOrCtrl+U',
             click: () => {
                 if (!uiPreferencesWin.isVisible()) {
                     uiPreferencesWin.show();
                 }
             }
         }, {
-            label: 'Select theme',
+            label: 'Select Theme',
+            accelerator:'CmdOrCtrl+T',
             click:(_,window)=>{
                 window.webContents.send('select-theme');
             }
@@ -252,7 +254,7 @@ ipcMainBinder.addEvents({
         dialog.showOpenDialog({
             properties: ['openFile'],
             filters: [{
-                name: 'Css(StyleSheets)',
+                name: 'CSS(Stylesheets)',
                 extensions: ['css']
             }]
         }, (data) => {
