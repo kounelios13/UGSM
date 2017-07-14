@@ -180,9 +180,10 @@ function restartService(service) {
 //This way a user can create its own theme
 function showAvailableThemes() {
     let themes = themeManager.getThemes();
+    let selectedThemeIndex = themeManager.getSelectedThemeIndex();
     let selectBox = `<select class='form-control' id='theme-select'>`;
-    themes.forEach(theme => {
-        selectBox += `<option>${theme}</option>`
+    themes.forEach((theme,index) => {
+        selectBox += `<option selected = ${index==selectedThemeIndex}>${theme}</option>`
     });
     selectBox += `</div>`;
     bootbox.dialog({
@@ -230,7 +231,7 @@ function showAvailableThemes() {
     });
 }
 $(document).ready(function() {
-    themeManager.applySelectedTheme(document.head);
+    themeManager.applySelectedTheme();
     if (localStorage.getItem("ui-preferences")) {
         let cssData = JSON.parse(localStorage.getItem("ui-preferences"));
         let cellFontSize = cssData['table-cell-size'];
