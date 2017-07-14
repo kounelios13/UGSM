@@ -20,5 +20,14 @@
     "services"
   ],
   "author": "kounelios13",
-  "license": "ISC"
+  "license": "MIT",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kounelios13/ubuntu-graphical-service-manager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kounelios13/ubuntu-graphical-service-manager/issues"
+  },
+  "homepage": "https://github.com/kounelios13/ubuntu-graphical-service-manager#readme"
 }
