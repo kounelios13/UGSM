@@ -274,9 +274,10 @@ $(document).ready(function() {
             }
         });
     });
-    $(document.body).on('hide.bs.modal','.theme-selection-modal',function(){
+    $("body").on('hide.bs.modal','.theme-selection-modal',function(){
         //If theme-selection-modal is closed via the `x` button the event will fire twice
         //Investigate why and how to solve it
+        console.log('closed theme')
         themeManager.saveThemes();
     });
 });
