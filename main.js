@@ -165,7 +165,7 @@ function createWindow() {
     win = new BrowserWindow({
         height: 800,
         width: 1200,
-        title: "UGSM v1.0.3",
+        title: "UGSM v1.0.4",
         show:false,
         icon: `${__dirname}/icons/ugsm256x256.png`
     });

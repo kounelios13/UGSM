@@ -1,6 +1,6 @@
 {
   "name": "gui_service_manager",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "main.js",
   "scripts": {
     "start": "sudo electron ."
