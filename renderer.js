@@ -15,7 +15,6 @@ const themeManager = new ThemeManagerBuilder(JSON.parse(localStorage.getItem('th
 var serviceEmmiter = new EventEmmiter();
 var serviceManager = new ServiceManagerBuilder(serviceEmmiter);
 var services = [];
-
 //Utility function that will help us
 //create the 3 types of links we need for our service list(Start, Stop,Restart)
 //@param type Type of link to create(start,stop,restart)
@@ -126,7 +125,7 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
         });
     },
     'apply-new-ui-settings': (event, data) => {
-        $("html,body").css(data)
+        $("html,body").css(data);
     },
     'select-theme': () => {
         showAvailableThemes();
@@ -161,11 +160,9 @@ var updateServiceStatus = (serviceName, status) => {
         }
     }
 };
-
 function startService(service) {
     serviceManager.startService(service);
 }
-
 function stopService(service) {
     confirm({
         message: `Are you sure you want to stop ${service} service?`,
@@ -176,7 +173,6 @@ function stopService(service) {
         }
     });
 }
-
 function restartService(service) {
     serviceManager.restartService(service);
 }
@@ -201,26 +197,36 @@ function showAvailableThemes() {
                     //Tell her that we need to select a theme file(css)
                     ipcRenderer.send('open-theme-selection-dialog');
                     return false;
-
                 }
             },
-            cancel: {},
+            removeTheme:{
+                label:'Remove theme',
+                className:'btn-danger',
+                callback:()=>{
+                    let themeSelect = document.getElementById('theme-select');
+                    let themeIndex = themeSelect.selectedIndex;
+                    let themeToRemove = themeSelect.value;
+                    themeManager.removeTheme(themeToRemove);
+                    //Remove theme from theme-selection modal
+                    themeSelect.childNodes[themeIndex].remove();
+                    //Don't close modal
+                    return false;
+                }
+            },
+            cancel: { label:'Cancel' },
             ok: {
                 label: 'Apply theme',
                 className: 'btn-success',
                 callback: () => {
                     let theme = $("#theme-select").val();
-                    if(theme){
+                    if (theme) {
                         themeManager.setSelectedTheme(theme)
-                        themeManager.saveThemes();
-                        let styleSheet = document.createElement('link');
-                        styleSheet.href = theme;
-                        styleSheet.rel = 'stylesheet';
-                        document.head.appendChild(styleSheet);
+                        themeManager.applySelectedTheme();
                     }
                 }
             }
-        }
+        },
+        className:'dialog-info theme-selection-modal'
     });
 }
 $(document).ready(function() {
@@ -267,5 +273,10 @@ $(document).ready(function() {
             }
         });
     });
-
+    $(document.body).on('hide.bs.modal','.theme-selection-modal',function(){
+        //If theme-selection-modal is closed via the `x` button the event will fire twice
+        //Investigate why and how to solve it
+        themeManager.saveThemes();
+    });
 });
+
