@@ -15,7 +15,7 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
         $("body").css({
             background: `url(${data}) no-repeat center center fixed`,
             "background-size": "cover"
-        })
+        });
     }
 });
 $(document).ready(function() {
@@ -86,4 +86,4 @@ $(document).ready(function() {
             }
         });
     });
-})
+});
