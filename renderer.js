@@ -126,7 +126,10 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
         });
     },
     'apply-new-ui-settings': (event, data) => {
+        let tableCellFontSize = data['table-cell-size'];
         $("body").css(data);
+        $("table").css("font-size",`${tableCellFontSize}px`);
+
     },
     'select-theme': () => {
         showAvailableThemes();

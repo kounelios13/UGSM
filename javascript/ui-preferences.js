@@ -36,6 +36,7 @@ $(document).ready(function() {
         //Loaded user preferences.Now apply them
         let tableCellSize = userPrefs['table-cell-size'] || 14;
         let textColor = userPrefs['color'];
+        let bgColor = userPrefs['background-color'];
         let fontName = userPrefs['font-family'];
         let fontIndex = fonts.indexOf(fontName);
         if (fontIndex != -1) {
@@ -45,9 +46,10 @@ $(document).ready(function() {
         $("body").css(userPrefs);
         $("table").css("font-size", `${tableCellSize}px`);
         //Use only hex colors
-        $("#color-selection").val(rgb2hex(textColor));
+        $("#text-color-selection").val(rgb2hex(textColor));
+        $("#bg-color-selection").val(rgb2hex(bgColor));
     }
-    $("#select-bg").on("click", function() {
+    $("#select-bg-image").on("click", function() {
         ipcRenderer.send('show-open-dialog')
     });
     $(fontList).on("change", function() {
@@ -58,9 +60,13 @@ $(document).ready(function() {
         let size = `${$(this).val()}px`;
         $("td").css('font-size', size);
     });
-    $("#color-selection").on("input", function() {
+    $("#text-color-selection").on("input", function() {
         let c = $(this).val();
-        $("body").css("color", c)
+        $("body").css("color", c);
+    });
+    $('#bg-color-selection').on("input",function(){
+        let c = $(this).val();
+        $("body").css("background-color",c);
     });
     $("#apply").on("click", function() {
         let cssData = {
@@ -68,6 +74,7 @@ $(document).ready(function() {
             "background-size": "cover",
             "font-family": $("body").css("font-family"),
             "color": $("body").css("color"),
+            "background-color":$("body").css("background-color"),
             "table-cell-size": $(cellFontSizeSlider).val()
         };
         ipcRenderer.send('apply-ui-settings', cssData);
