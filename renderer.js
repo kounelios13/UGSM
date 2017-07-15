@@ -126,7 +126,7 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
         });
     },
     'apply-new-ui-settings': (event, data) => {
-        $("html,body").css(data);
+        $("body").css(data);
     },
     'select-theme': () => {
         showAvailableThemes();
@@ -249,7 +249,7 @@ $(document).ready(function() {
     if (localStorage.getItem("ui-preferences")) {
         let cssData = JSON.parse(localStorage.getItem("ui-preferences"));
         let cellFontSize = cssData['table-cell-size'];
-        $("html,body").css(cssData);
+        $("body").css(cssData);
         $("table").css("font-size", `${cellFontSize}px`);
     }
     //Loaded all css now show the window

@@ -42,7 +42,7 @@ $(document).ready(function() {
             fontList[fontIndex].selected = true;
         }
         cellFontSizeSlider.value = tableCellSize;
-        $("html,body").css(userPrefs);
+        $("body").css(userPrefs);
         $("table").css("font-size", `${tableCellSize}px`);
         //Use only hex colors
         $("#color-selection").val(rgb2hex(textColor));
@@ -52,7 +52,7 @@ $(document).ready(function() {
     });
     $(fontList).on("change", function() {
         let font = $(this).val();
-        $("html,body").css("font-family", font);
+        $("body").css("font-family", font);
     });
     $(cellFontSizeSlider).on('mousemove input', function() {
         let size = `${$(this).val()}px`;
@@ -60,14 +60,14 @@ $(document).ready(function() {
     });
     $("#color-selection").on("input", function() {
         let c = $(this).val();
-        $("html,body").css("color", c)
+        $("body").css("color", c)
     });
     $("#apply").on("click", function() {
         let cssData = {
             background: $("body").css("background"),
             "background-size": "cover",
-            "font-family": $("body,html").css("font-family"),
-            "color": $("body,html").css("color"),
+            "font-family": $("body").css("font-family"),
+            "color": $("body").css("color"),
             "table-cell-size": $(cellFontSizeSlider).val()
         };
         ipcRenderer.send('apply-ui-settings', cssData);
