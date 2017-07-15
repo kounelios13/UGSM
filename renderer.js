@@ -66,7 +66,8 @@ var createServiceListTable = (data) => {
 serviceEmmiter.on('receive-services', (data) => {
     services = data;
     createServiceListTable(services);
-    bootbox.hideAll();
+    //Hide only the startup dialog modal
+    $('.dialog-info:not(.theme-selection-modal)').modal('hide');
 });
 var serviceEmmiterBinder = new Binder(serviceEmmiter, {
     'service-stop-status': (data) => {
@@ -153,7 +154,7 @@ var updateServiceStatus = (serviceName, status) => {
         let rowChildren = serviceRow.children;
         rowChildren[1].innerText = status;
         //Now we need to check if the user sees all services or sees them filtered
-        //If filtered we need to remobe the affected row
+        //If filtered we need to remove the affected row
         let activeRows = document.querySelector("tbody").children;
         if (activeRows.length != services.length) {
             serviceRow.remove()
@@ -192,7 +193,7 @@ function showAvailableThemes() {
         buttons: {
             addTheme: {
                 label: 'Add new theme',
-                className: 'btn-info',
+                className: 'btn-primary',
                 callback: () => {
                     //Talk to main
                     //Tell her that we need to select a theme file(css)
@@ -211,6 +212,19 @@ function showAvailableThemes() {
                     //Remove theme from theme-selection modal
                     themeSelect.childNodes[themeIndex].remove();
                     //Don't close modal
+                    return false;
+                }
+            },
+            editTheme:{
+                label:'Edit theme',
+                className:'btn-info',
+                callback:()=>{
+                    let theme = $("#theme-select").val();
+                    if(theme){
+                        ipcRenderer.send('edit-theme',theme);
+                    }else{
+                        error('No theme selected');
+                    }
                     return false;
                 }
             },
