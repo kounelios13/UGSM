@@ -6,9 +6,10 @@ const {
     dialog,
     Tray
 } = require('electron');
-const path = require('path');
-const url = require('url');
 const fs = require('fs');
+const exec = require('child_process').exec;
+const url = require('url');
+const path = require('path');
 const Binder = require('./classes/binder.js');
 let win = null;
 let uiPreferencesWin = null;
@@ -165,7 +166,7 @@ function createWindow() {
     win = new BrowserWindow({
         height: 800,
         width: 1200,
-        title: "UGSM v1.0.3",
+        title: "UGSM v1.0.4",
         show:false,
         icon: `${__dirname}/icons/ugsm256x256.png`
     });
@@ -262,6 +263,22 @@ ipcMainBinder.addEvents({
                 //data is an array containing a single item
                 //which is the path of the selected theme(css file)
                 event.sender.send('receive-selected-theme', data[0]);
+            }
+        });
+    },
+    'edit-theme':(event,theme)=>{
+        console.log(`gedit ${theme}`);
+        exec(`gedit ${theme}`,(error,stdout,stderr)=>{
+            //@TODO
+            //handle errors
+            if(error){
+                console.log(error);
+            }
+            if(stdout){
+                console.log(`stdout \n${stdout}`);
+            }
+            if(stderr){
+                console.log(`stderr \n${stderr}`);
             }
         });
     },

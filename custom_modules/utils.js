@@ -44,7 +44,7 @@ let rgb2hex = color => {
         col = parseInt(col).toString(16);
         //make sure that hex value is not single character
         //e.g. a becomes 09
-        return (col.length == 1) ? `${0}col` : col;
+        return (col.length == 1) ? `0${col}` : col;
     }).join('');
 };
 module.exports = {

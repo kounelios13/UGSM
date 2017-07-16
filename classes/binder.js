@@ -25,7 +25,7 @@ class Binder {
         }
     }
     getEvents(){
-        return this.obj
+        return this.obj;
     }
 
 }

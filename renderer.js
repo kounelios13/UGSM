@@ -66,7 +66,8 @@ var createServiceListTable = (data) => {
 serviceEmmiter.on('receive-services', (data) => {
     services = data;
     createServiceListTable(services);
-    bootbox.hideAll();
+    //Hide only the startup dialog modal
+    $('.dialog-info:not(.theme-selection-modal)').modal('hide');
 });
 var serviceEmmiterBinder = new Binder(serviceEmmiter, {
     'service-stop-status': (data) => {
@@ -125,7 +126,10 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
         });
     },
     'apply-new-ui-settings': (event, data) => {
-        $("html,body").css(data);
+        let tableCellFontSize = data['table-cell-size'];
+        $("body").css(data);
+        $("table").css("font-size",`${tableCellFontSize}px`);
+
     },
     'select-theme': () => {
         showAvailableThemes();
@@ -153,7 +157,7 @@ var updateServiceStatus = (serviceName, status) => {
         let rowChildren = serviceRow.children;
         rowChildren[1].innerText = status;
         //Now we need to check if the user sees all services or sees them filtered
-        //If filtered we need to remobe the affected row
+        //If filtered we need to remove the affected row
         let activeRows = document.querySelector("tbody").children;
         if (activeRows.length != services.length) {
             serviceRow.remove()
@@ -179,6 +183,12 @@ function restartService(service) {
 //Let the user choose a css file to use 
 //This way a user can create its own theme
 function showAvailableThemes() {
+    //If theme-selection modal is open
+    //we don't wan't to reshow it
+    if($(".theme-selection-modal").is(":visible")){
+        console.log('Theme selection modal is already open');
+        return;
+    }
     let themes = themeManager.getThemes();
     let selectedThemeIndex = themeManager.getSelectedThemeIndex();
     let selectBox = `<select class='form-control' id='theme-select'>`;
@@ -192,7 +202,7 @@ function showAvailableThemes() {
         buttons: {
             addTheme: {
                 label: 'Add new theme',
-                className: 'btn-info',
+                className: 'btn-primary',
                 callback: () => {
                     //Talk to main
                     //Tell her that we need to select a theme file(css)
@@ -214,6 +224,19 @@ function showAvailableThemes() {
                     return false;
                 }
             },
+            editTheme:{
+                label:'Edit theme',
+                className:'btn-info',
+                callback:()=>{
+                    let theme = $("#theme-select").val();
+                    if(theme){
+                        ipcRenderer.send('edit-theme',theme);
+                    }else{
+                        error('No theme selected');
+                    }
+                    return false;
+                }
+            },
             cancel: { label:'Cancel' },
             ok: {
                 label: 'Apply theme',
@@ -227,6 +250,7 @@ function showAvailableThemes() {
                 }
             }
         },
+        size:'large',
         className:'dialog-info theme-selection-modal'
     });
 }
@@ -235,7 +259,7 @@ $(document).ready(function() {
     if (localStorage.getItem("ui-preferences")) {
         let cssData = JSON.parse(localStorage.getItem("ui-preferences"));
         let cellFontSize = cssData['table-cell-size'];
-        $("html,body").css(cssData);
+        $("body").css(cssData);
         $("table").css("font-size", `${cellFontSize}px`);
     }
     //Loaded all css now show the window
