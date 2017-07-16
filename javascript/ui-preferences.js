@@ -4,6 +4,7 @@ const {
 const {
     success,
     warning,
+    error,
     rgb2hex
 } = require('../custom_modules/utils.js');
 const Binder = require('../classes/binder.js');
@@ -19,7 +20,7 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
         //the code won't work
         data = data.replace(/ /g, '%20');
         $("body").css({
-            "background":`url(${data}) no-repeat center center fixed`,
+            "background": `url(${data}) no-repeat center center fixed`,
             "background-size": "cover"
         });
     }
@@ -52,6 +53,9 @@ $(document).ready(function() {
         $("body").css(userPrefs);
         $("table").css("font-size", `${tableCellSize}px`);
         //Use only hex colors
+        //@TODO
+        //Check if any of that colors has a falsy value
+        //else program crashes when trying to execute rgb2hex with a falsy value
         $("#text-color-selection").val(rgb2hex(textColor));
         $("#bg-color-selection").val(rgb2hex(bgColor));
     }
@@ -70,9 +74,9 @@ $(document).ready(function() {
         let c = $(this).val();
         $("body").css("color", c);
     });
-    $('#bg-color-selection').on("input",function(){
+    $('#bg-color-selection').on("input", function() {
         let c = $(this).val();
-        $("body").css("background-color",c);
+        $("body").css("background-color", c);
     });
     $("#apply").on("click", function() {
         let cssData = {
@@ -80,7 +84,7 @@ $(document).ready(function() {
             "background-size": "cover",
             "font-family": $("body").css("font-family"),
             "color": $("body").css("color"),
-            "background-color":$("body").css("background-color"),
+            "background-color": $("body").css("background-color"),
             "table-cell-size": $(cellFontSizeSlider).val()
         };
         ipcRenderer.send('apply-ui-settings', cssData);
@@ -98,5 +102,26 @@ $(document).ready(function() {
                 }
             }
         });
+    });
+    $("#save-as-theme").on("click", function() {
+        //Time to convert our ui preferences into
+        //a css string 
+        let prefs = JSON.parse(localStorage.getItem('ui-preferences'));
+        if (!prefs) {
+            error("You don't have any saved settings saved");
+            return;
+        }
+        let cssString = `
+body{
+    color:${prefs.color};
+    background:${prefs.background};
+    background-size:cover;
+    font-family:${prefs['font-family']};
+}
+#service-table{
+    font-size:${prefs['table-cell-size']}px;
+}
+            `;
+        ipcRenderer.send('export-settings-as-theme',cssString);
     });
 });
