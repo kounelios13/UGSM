@@ -183,6 +183,12 @@ function restartService(service) {
 //Let the user choose a css file to use 
 //This way a user can create its own theme
 function showAvailableThemes() {
+    //If theme-selection modal is open
+    //we don't wan't to reshow it
+    if($(".theme-selection-modal").is(":visible")){
+        console.log('Theme selection modal is already open');
+        return;
+    }
     let themes = themeManager.getThemes();
     let selectedThemeIndex = themeManager.getSelectedThemeIndex();
     let selectBox = `<select class='form-control' id='theme-select'>`;
@@ -244,6 +250,7 @@ function showAvailableThemes() {
                 }
             }
         },
+        size:'large',
         className:'dialog-info theme-selection-modal'
     });
 }
