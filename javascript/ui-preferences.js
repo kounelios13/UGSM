@@ -12,8 +12,14 @@ const fonts = new SystemFontManager().getFontsSync();
 var fragment = document.createDocumentFragment();
 var ipcRendererBinder = new Binder(ipcRenderer, {
     'receive-selected-image': (event, data) => {
+        //We need to make sure that image path does not contain
+        //spaces .Spaces in file path do break css code
+        //Also in css() use "background" instead of "background-image"
+        //Because if image path contains spaces even after replacing them 
+        //the code won't work
+        data = data.replace(/ /g, '%20');
         $("body").css({
-            background: `url(${data}) no-repeat center center fixed`,
+            "background":`url(${data}) no-repeat center center fixed`,
             "background-size": "cover"
         });
     }
