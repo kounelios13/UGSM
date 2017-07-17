@@ -37,6 +37,12 @@ let confirm = options => {
 };
 window.confirm = confirm;
 let rgb2hex = color => {
+    if(!color){
+        //In case user pass no color
+        //return black color
+        console.warn(`Be careful.You got the default color because no argument was passed`);
+        return `#000000`;
+    }
     var rgbValues = color.split("(")[1].split(")")[0].split(",");
     return `#` + rgbValues.map(col => {
         //Covnvert each rgb value to hex format
