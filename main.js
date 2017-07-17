@@ -15,6 +15,7 @@ let win = null;
 let uiPreferencesWin = null;
 var allowAppTermination = false;
 let trayIcon = null;
+
 function createTrayIcon() {
     trayIcon = new Tray('icons/ugsm256x256.png');
     const trayMenuTemplate = [{
@@ -51,6 +52,7 @@ function createTrayIcon() {
     const trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
     trayIcon.setContextMenu(trayMenu);
 }
+
 function createMainWindowMenuBar() {
     const menuTemplate = [{
         label: 'File',
@@ -137,7 +139,7 @@ function createMainWindowMenuBar() {
         label: 'Preferences',
         submenu: [{
             label: 'UI settings',
-            accelerator:'CmdOrCtrl+U',
+            accelerator: 'CmdOrCtrl+U',
             click: () => {
                 if (!uiPreferencesWin.isVisible()) {
                     uiPreferencesWin.show();
@@ -145,8 +147,8 @@ function createMainWindowMenuBar() {
             }
         }, {
             label: 'Select Theme',
-            accelerator:'CmdOrCtrl+T',
-            click:(_,window)=>{
+            accelerator: 'CmdOrCtrl+T',
+            click: (_, window) => {
                 window.webContents.send('select-theme');
             }
         }]
@@ -161,13 +163,14 @@ function preserveWindow(window) {
         window.hide();
     });
 }
+
 function createWindow() {
     createTrayIcon();
     win = new BrowserWindow({
         height: 800,
         width: 1200,
         title: "UGSM v1.0.4",
-        show:false,
+        show: false,
         icon: `${__dirname}/icons/ugsm256x256.png`
     });
     win.loadURL(url.format({
@@ -222,7 +225,7 @@ const appBinder = new Binder(app, {
     }
 });
 const ipcMainBinder = new Binder(ipcMain, {
-    'show-application':()=>{
+    'show-application': () => {
         win.show();
     },
     'exit-confirmation-answer': (_, answer) => {
@@ -251,7 +254,7 @@ ipcMainBinder.addEvents({
             }
         });
     },
-    'open-theme-selection-dialog':(event,_)=>{
+    'open-theme-selection-dialog': (event, _) => {
         dialog.showOpenDialog({
             properties: ['openFile'],
             filters: [{
@@ -266,18 +269,48 @@ ipcMainBinder.addEvents({
             }
         });
     },
-    'edit-theme':(event,theme)=>{
+    'export-settings-as-theme': (event, settings) => {
+        dialog.showSaveDialog({
+            title: 'Export settings as theme',
+            filters: [{
+                name: 'UGSM theme(CSS)',
+                extensions: ['css']
+            }]
+        }, (fileName) => {
+            if (fileName) {
+                fs.writeFile(fileName, settings, (error) => {
+                    //Since this code executes as root the file being created is read only.
+                    //chmod() it
+                    let exportStatus = {
+                        fileExported:error==undefined,
+                        permissionsChanged:false,
+                        //In case of error 
+                        //Let the user know what happened
+                        error 
+                    };
+                    fs.chmod(fileName, 0666, (error) => {
+                        if(!error){
+                            exportStatus.permissionsChanged = true;
+                        }
+                        //Now it's time to let the user know whether the theme has been created or not
+                        event.sender.send('export-status',exportStatus);
+                    });
+                });
+            }
+        });
+    },
+    'edit-theme': (event, theme) => {
         console.log(`gedit ${theme}`);
-        exec(`gedit ${theme}`,(error,stdout,stderr)=>{
+        exec(`gedit ${theme}`, (error, stdout, stderr) => {
             //@TODO
             //handle errors
-            if(error){
+            if (error) {
                 console.log(error);
             }
-            if(stdout){
+            if (stdout) {
                 console.log(`stdout \n${stdout}`);
             }
-            if(stderr){
+            if (stderr) {
                 console.log(`stderr \n${stderr}`);
             }
         });
