@@ -270,20 +270,31 @@ ipcMainBinder.addEvents({
         });
     },
     'export-settings-as-theme': (event, settings) => {
-        console.log('?????')
-        console.log(settings)
         dialog.showSaveDialog({
             title: 'Export settings as theme',
             filters: [{
                 name: 'UGSM theme(CSS)',
                 extensions: ['css']
             }]
-        },(fileName) => {
-            console.log('callback scope');
-            console.log(fileName);
+        }, (fileName) => {
             if (fileName) {
                 fs.writeFile(fileName, settings, (error) => {
-                    console.log("fs reached");
+                    //Since this code executes as root the file being created is read only.
+                    //chmod() it
+                    let exportStatus = {
+                        fileExported:error==undefined,
+                        permissionsChanged:false,
+                        //In case of error 
+                        //Let the user know what happened
+                        error 
+                    };
+                    fs.chmod(fileName, 0666, (error) => {
+                        if(!error){
+                            exportStatus.permissionsChanged = true;
+                        }
+                        //Now it's time to let the user know whether the theme has been created or not
+                        event.sender.send('export-status',exportStatus);
+                    });
                 });
             }
         });

@@ -23,6 +23,23 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
             "background": `url(${data}) no-repeat center center fixed`,
             "background-size": "cover"
         });
+    },
+    'export-status':(event,data)=>{
+        //Time to see whether we succeed 
+        //to export our ui settings as a theme or not
+        if(data.fileExported){
+            if(data.permissionsChanged){
+                success('Your ui settings have been exported as a UGSM theme');
+            }else{
+                warning('Your ui settings have been exported as a UGSM theme.However this theme will be read only which means no editable');
+            }
+        }else{
+            let message = `
+                Couldn't export your ui settings as a UGSM theme.See error log below
+                <textarea class='form-control text-danger'>${data.error}</textarea>
+            `;
+            error(message);
+        }
     }
 });
 $(document).ready(function() {
@@ -53,9 +70,6 @@ $(document).ready(function() {
         $("body").css(userPrefs);
         $("table").css("font-size", `${tableCellSize}px`);
         //Use only hex colors
-        //@TODO
-        //Check if any of that colors has a falsy value
-        //else program crashes when trying to execute rgb2hex with a falsy value
         $("#text-color-selection").val(rgb2hex(textColor));
         $("#bg-color-selection").val(rgb2hex(bgColor));
     }
