@@ -49,7 +49,7 @@ let rgb2hex = color => {
         //E.g. 255 --> ff
         col = parseInt(col).toString(16);
         //make sure that hex value is not single character
-        //e.g. a becomes 09
+        //e.g. 9 becomes 09
         return (col.length == 1) ? `0${col}` : col;
     }).join('');
 };
