@@ -41,6 +41,18 @@ to see the elements of the page you want to style
 
 If you have added some themes before they will show up in a select box.From there choose the one you want and then press `Apply theme`
 
+# Notes 
+
+## localStorage
+All user preferences (ui settings,and user theme file paths) are saved into
+`localStorage`
+
+To find out more about `localStorage` and its limitations click [here](https://developer.mozilla.org/en-US/docs/Web/API/Storage/LocalStorage)
+
+## UGSM themes
+
+`UGSM` themes are just simple css files.When you add a new theme you don't add their content to `UGSM`.What you do is to tell to the program to store a reference to the path of the css file.That's why If you delete the original css file you lose your theme.
+
 
 
 
