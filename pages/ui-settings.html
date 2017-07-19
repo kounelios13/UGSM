@@ -9,8 +9,8 @@
         <link rel="stylesheet" href="../css/range.css">
         <script>
         if (typeof module === 'object') {
-        window.module = module;
-        module = undefined;
+            window.module = module;
+            module = undefined;
         }
         </script>
         <script src="../javascript/jquery.min.js"></script>
@@ -21,7 +21,6 @@
         if (window.module) module = window.module;
         </script>
         <script>
-        
         </script>
     </head>
     <body>
@@ -34,10 +33,16 @@
         <select id="font-list" class="form-control"></select>
         <h1>Select application background image</h1>
         <div id="select-bg-image" class="btn btn-info">Select image</div>
-        <h1>Select text color</h1>
-        <input type="color" id = "text-color-selection">
-        <h1>Select background color</h1>
-        <input type="color" id='bg-color-selection'>
+        <div class="row">
+            <div class="col-lg-6">
+                <h1>Select text color</h1>
+                <input type="color" id = "text-color-selection">
+            </div>
+            <div class="col-lg-6">
+                <h1>Select background color</h1>
+                <input type="color" id='bg-color-selection'>
+            </div>
+        </div>
         <h1>Table cell font size</h1>
         <div style='padding:10px'>
             <input type="range" min="10" max="48" value="14" class="ugsm" id="cell-font-size" >
