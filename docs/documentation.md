@@ -1,6 +1,6 @@
 UGSM 
 =====
-#How does UGSM works?
+# How does UGSM works?
 Under the hood UGSM is a wrapper for 4 shell comands
 1. `service status--all`
 2. `service foo start`
@@ -17,7 +17,9 @@ It's dead simple.
 
 4th command restarts `foo` service
 
-Now at first `UGSM` user interface might look ugly but don't worry.There are 2 solutions:
+Last 3 commands require `root(sudo) access`.That's why you will be prompted  for your root password if you start `UGSM` using `npm start`.If you start `UGSM` without `root` it won't work
+
+# Now at first `UGSM` user interface might look ugly but don't worry.There are 2 solutions:
 
 1.Change UI Settings
 
@@ -34,6 +36,10 @@ To add a theme you can do the following:
 
 To write a theme you can open the `Developer Tools` and use the `Element Inspector`
 to see the elements of the page you want to style
+
+#### Assuming you have added some themes
+
+If you have added some themes before they will show up in a select box.From there choose the one you want and then press `Apply theme`
 
 
 
