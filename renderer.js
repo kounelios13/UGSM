@@ -128,7 +128,7 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
     'apply-new-ui-settings': (event, data) => {
         let tableCellFontSize = data['table-cell-size'];
         $("body").css(data);
-        $("table").css("font-size",`${tableCellFontSize}px`);
+        $("table").css("font-size", `${tableCellFontSize}px`);
 
     },
     'select-theme': () => {
@@ -139,7 +139,7 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
         //Check if theme exists by checking all available themes
         //.every() checks all element inside an array(or an array like object) to see if they pass the function
         //provided as callback.For our case if they don't it means that the theme already exists so we exit
-        if(![...themes].every(theme=>theme.text != data)){
+        if (![...themes].every(theme => theme.text != data)) {
             return;
         }
         $('#theme-select').append(`<option>${data}</option>`);
@@ -169,9 +169,11 @@ var updateServiceStatus = (serviceName, status) => {
         }
     }
 };
+
 function startService(service) {
     serviceManager.startService(service);
 }
+
 function stopService(service) {
     confirm({
         message: `Are you sure you want to stop ${service} service?`,
@@ -182,6 +184,7 @@ function stopService(service) {
         }
     });
 }
+
 function restartService(service) {
     serviceManager.restartService(service);
 }
@@ -190,17 +193,17 @@ function restartService(service) {
 function showAvailableThemes() {
     //If theme-selection modal is open
     //we don't wan't to reshow it
-    if($(".theme-selection-modal").is(":visible")){
+    if ($(".theme-selection-modal").is(":visible")) {
         console.log('Theme selection modal is already open');
         return;
     }
     let themes = themeManager.getThemes();
     let selectedThemeIndex = themeManager.getSelectedThemeIndex();
     let selectBox = `<select class='form-control' id='theme-select'>`;
-    themes.forEach((theme,index) => {
-        selectBox += `<option selected = ${index==selectedThemeIndex}>${theme}</option>`
+    themes.forEach((theme) => {
+        selectBox += `<option>${theme}</option>`
     });
-    selectBox += `</div>`;
+    selectBox += `</select>`;
     bootbox.dialog({
         title: 'Choose a theme',
         message: selectBox,
@@ -215,10 +218,10 @@ function showAvailableThemes() {
                     return false;
                 }
             },
-            removeTheme:{
-                label:'Remove theme',
-                className:'btn-danger',
-                callback:()=>{
+            removeTheme: {
+                label: 'Remove theme',
+                className: 'btn-danger',
+                callback: () => {
                     let themeSelect = document.getElementById('theme-select');
                     let themeIndex = themeSelect.selectedIndex;
                     let themeToRemove = themeSelect.value;
@@ -229,20 +232,22 @@ function showAvailableThemes() {
                     return false;
                 }
             },
-            editTheme:{
-                label:'Edit theme',
-                className:'btn-info',
-                callback:()=>{
+            editTheme: {
+                label: 'Edit theme',
+                className: 'btn-info',
+                callback: () => {
                     let theme = $("#theme-select").val();
-                    if(theme){
-                        ipcRenderer.send('edit-theme',theme);
-                    }else{
+                    if (theme) {
+                        ipcRenderer.send('edit-theme', theme);
+                    } else {
                         error('No theme selected');
                     }
                     return false;
                 }
             },
-            cancel: { label:'Cancel' },
+            cancel: {
+                label: 'Cancel'
+            },
             ok: {
                 label: 'Apply theme',
                 className: 'btn-success',
@@ -255,8 +260,8 @@ function showAvailableThemes() {
                 }
             }
         },
-        size:'large',
-        className:'dialog-info theme-selection-modal'
+        size: 'large',
+        className: 'dialog-info theme-selection-modal'
     });
 }
 $(document).ready(function() {
@@ -303,11 +308,18 @@ $(document).ready(function() {
             }
         });
     });
-    $("body").on('hide.bs.modal','.theme-selection-modal',function(){
+    $("body").on('hide.bs.modal', '.theme-selection-modal', function() {
         //If theme-selection-modal is closed via the `x` button the event will fire twice
         //Investigate why and how to solve it
-        console.log('closed theme')
         themeManager.saveThemes();
+    }).on('show.bs.modal', '.theme-selection-modal', function() {
+        let selectedThemeIndex = themeManager.getSelectedThemeIndex();
+        if(selectedThemeIndex == -1){
+            //We haven't selected any theme so we just exit this part of the program
+            return;
+        }
+        //Find which option to make selected
+        document.getElementById('theme-select')
+            .childNodes[selectedThemeIndex].selected = true;
     });
 });
-
