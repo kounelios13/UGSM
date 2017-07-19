@@ -13,7 +13,10 @@ class ThemeManager {
         }
     }
     addTheme(theme) {
-        this.themes.push(theme);
+        //Make sure we don't add a theme we already have
+        if (this.themes.indexOf(theme) === -1) {
+            this.themes.push(theme);
+        }
     }
     removeTheme(theme) {
         let indexToRemove = this.themes.indexOf(theme);
@@ -21,7 +24,7 @@ class ThemeManager {
         //Now we need to remove null valus from our themes array
         this.themes = this.themes.filter(e => e != null);
         //Check if the theme we removed was the selectedTheme
-        if(this.selectedTheme == theme){
+        if (this.selectedTheme == theme) {
             this.selectedTheme = null;
         }
         //This is the only case we force saveThemes()
@@ -30,7 +33,6 @@ class ThemeManager {
         //they decide to restart the application and they see that the theme they remove is still on their list
         //because saveThemes() was executed only after closing theme-selection-modal
         this.saveThemes();
-
     }
     getThemes() {
         return this.themes;

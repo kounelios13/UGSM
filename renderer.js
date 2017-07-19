@@ -135,8 +135,13 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
         showAvailableThemes();
     },
     'receive-selected-theme': (event, data) => {
-        //Yeah new theme received
-        //Add that to theme select box
+        let themes = document.getElementById('theme-select').childNodes;
+        //Check if theme exists by checking all available themes
+        //.every() checks all element inside an array(or an array like object) to see if they pass the function
+        //provided as callback.For our case if they don't it means that the theme already exists so we exit
+        if(![...themes].every(theme=>theme.text != data)){
+            return;
+        }
         $('#theme-select').append(`<option>${data}</option>`);
         //Now we need to save that theme into localStorage
         themeManager.addTheme(data);
