@@ -14,3 +14,5 @@ How to run:
 To start `UGSM`:
 * cd into UGSM directory
 * open a terminal and type `npm start`
+
+**See `UGSM` documentation [here](docs/documentation.md)**
