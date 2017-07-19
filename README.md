@@ -9,6 +9,7 @@ How to run:
 * Clone the repo
 * Install dependencies
 
+**In order for this app to work make sure that `electon` is installed using globally by using `npm install -g electron`**
 <code>git clone https://github.com/kounelios13/ubuntu-graphical-service-manager.git && cd ubuntu-graphical-service-manager && npm install</code>
 
 To start `UGSM`:
