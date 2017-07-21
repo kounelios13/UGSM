@@ -53,6 +53,11 @@ To find out more about `localStorage` and its limitations click [here](https://d
 
 `UGSM` themes are just simple css files.When you add a new theme you don't add their content to `UGSM`.What you do is to tell to the program to store a reference to the path of the css file.That's why If you delete the original css file you lose your theme.
 
+## Tray Icon
+
+`UGSM` uses a tray icon.However using Tray icons have some limitations on some platforms.Read more [here](https://electron.atom.io/docs/api/tray/) !!!!
+
+
 
 
 
