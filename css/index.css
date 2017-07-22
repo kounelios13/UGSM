@@ -2,7 +2,7 @@ body{
     background: #252323;
 }
 th,td{
-    color:rgba(250,250,250,0);
+    color:rgba(250,250,250,0.8);
 }
 td a {
     padding: 4px;
