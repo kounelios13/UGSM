@@ -2,15 +2,15 @@ const {
     success,
     error,
     info
-} = require('./custom_modules/utils.js');
+} = require('../custom_modules/utils.js');
 const {
     ipcRenderer
 } = require('electron');
 const EventEmmiter = require('events');
-const Binder = require('./classes/binder.js');
-const ServiceManagerBuilder = require('./classes/service-manager.js');
-const IllegalArgumentError = require('./classes/illegalArgumentError.js');
-const ThemeManagerBuilder = require('./classes/themeManager.js');
+const Binder = require('../classes/binder.js');
+const ServiceManagerBuilder = require('../classes/service-manager.js');
+const IllegalArgumentError = require('../classes/illegalArgumentError.js');
+const ThemeManagerBuilder = require('../classes/themeManager.js');
 const themeManager = new ThemeManagerBuilder(JSON.parse(localStorage.getItem('theme-manager-files')));
 var serviceEmmiter = new EventEmmiter();
 var serviceManager = new ServiceManagerBuilder(serviceEmmiter);

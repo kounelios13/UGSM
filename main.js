@@ -11,6 +11,8 @@ const exec = require('child_process').exec;
 const url = require('url');
 const path = require('path');
 const Binder = require('./classes/binder.js');
+const locals = {/* ...*/};
+const pug = require('electron-pug')({pretty: true}, locals);
 let win = null;
 let uiPreferencesWin = null;
 var allowAppTermination = false;
@@ -174,7 +176,8 @@ function createWindow() {
         icon: `${__dirname}/icons/ugsm256x256.png`
     });
     win.loadURL(url.format({
-        pathname: path.join(__dirname, './services.html'),
+        /*pathname: path.join(__dirname, './services.html'),*/
+        pathname: path.join(__dirname, './pages/main.pug'),
         protocol: 'file:',
         slashes: true
     }));
