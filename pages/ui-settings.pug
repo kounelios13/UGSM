@@ -1,0 +1,74 @@
+doctype
+html
+    head
+        meta(name='viewport',content='width=device-width,initial-scale=1')
+        link(rel='stylesheet',href='../css/bootstrap.min.css')
+        link(rel='stylesheet',href='../css/custom-bootbox.css')
+        link(rel='stylesheet',href='../css/index.css')
+        link(rel='stylesheet',href='../css/range.css')
+        script.
+            if(typeof module === 'object'){
+                window.module = module;
+                module = undefined;
+            }
+        script(src='../javascript/jquery.min.js')
+        script(src='../javascript/bootstrap.min.js')
+        script(src='../javascript/bootbox.min.js')
+        script(src='../javascript/ui-preferences.js')
+    body
+        div.container-fluid
+            div.jumbotron
+                h1 Change UI settings
+                p Select fonts,text colors and background image.
+                To apply them press 
+                    code
+                        | Apply settings
+            h1 Font
+            select#font-list.form-control
+            h1 Select application background image
+            #select-bg-image.btn.btn-info Select image
+            .row
+                .col-lg-6
+                    h1 Select text color
+                    input#text-color-selection(type='color')
+                .col-lg-6
+                    h1 Select background color
+                    input#bg-color-selection(type='color')
+            div(style='padding:10px')
+                input#cell-font-size.ugsm(type='range',min='10',max='48',value='14')
+                table.table.table-bordered(style='margin-top:3vh')
+                    thead
+                        tr
+                            th Column title 1
+                            th Column title 2
+                            th Column title 3
+                            th Column title 4
+                    tbody
+                        tr
+                            td Cell text 1
+                            td Cell text 2
+                            td Cell text 3
+                            td Cell text 4
+                        tr
+                            td Cell text 1
+                            td Cell text 2
+                            td Cell text 3
+                            td Cell text 4
+                        tr
+                            td Cell text 1
+                            td Cell text 2
+                            td Cell text 3
+                            td Cell text 4
+                        tr
+                            td Cell text 1
+                            td Cell text 2
+                            td Cell text 3
+                            td Cell text 4
+            .row
+                .col-lg-6.col-sm6.col-md-6.col-sm-6.col-xs-6
+                    #apply.btn.btn-block.btn-info Apply settings
+                .col-lg-6.col-sm6.col-md-6.col-sm-6.col-xs-6
+                    #delete-settings.btn.btn-block.btn-danger Delete settings
+            .row(style='margin-top:2vh')
+                .col-lg-12.col-md-12.col-sm-12.col-xs-12
+                    #save-as-theme.btn.btn-block.btn-success Save settings as theme

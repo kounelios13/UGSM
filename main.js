@@ -203,7 +203,7 @@ function createWindow() {
         icon: `${__dirname}/icons/ugsm256x256.png`
     });
     uiPreferencesWin.loadURL(url.format({
-        pathname: path.join(__dirname, 'pages/ui-settings.html'),
+        pathname: path.join(__dirname, 'pages/ui-settings.pug'),
         protocol: 'file:',
         slashes: true
     }));
