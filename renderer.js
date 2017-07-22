@@ -2,6 +2,7 @@ const {
     success,
     error,
     info
+    //Path must be relative to pages folder
 } = require('../custom_modules/utils.js');
 const {
     ipcRenderer
