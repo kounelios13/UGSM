@@ -112,7 +112,17 @@ $(document).ready(function() {
             callback: (answer) => {
                 if (answer) {
                     localStorage.removeItem('ui-preferences');
-                    success('UI preferences cleared.Please restart application');
+                    confirm({
+                        message:'Do you want to reset UGSM to its default settings(Default theme and no custom configurations)?',
+                        callback:(answer)=>{
+                            if(answer){
+                                localStorage.removeItem('theme-manager-files');
+                                success('UGSM reseted to default configuration.Please restart application');
+                            }else{
+                                success('UI preferences cleared.Please restart application');
+                            }
+                        }
+                    });
                 }
             }
         });
