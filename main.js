@@ -17,7 +17,6 @@ let win = null;
 let uiPreferencesWin = null;
 var allowAppTermination = false;
 let trayIcon = null;
-
 function createTrayIcon() {
     trayIcon = new Tray('icons/ugsm256x256.png');
     const trayMenuTemplate = [{
@@ -54,7 +53,6 @@ function createTrayIcon() {
     const trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
     trayIcon.setContextMenu(trayMenu);
 }
-
 function createMainWindowMenuBar() {
     const menuTemplate = [{
         label: 'File',
@@ -164,7 +162,6 @@ function preserveWindow(window) {
         window.hide();
     });
 }
-
 function createWindow() {
     createTrayIcon();
     win = new BrowserWindow({
@@ -320,5 +317,8 @@ ipcMainBinder.addEvents({
     'apply-ui-settings': (event, data) => {
         //Apply new css
         win.webContents.send('apply-new-ui-settings', data);
+    },
+    'update-ui-settings-theme':(event,theme)=>{
+        uiPreferencesWin.webContents.send('update-ui-settings-theme',theme);
     }
 });

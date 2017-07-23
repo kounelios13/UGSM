@@ -257,6 +257,9 @@ function showAvailableThemes() {
                     if (theme) {
                         themeManager.setSelectedTheme(theme)
                         themeManager.applySelectedTheme();
+                        //We also need to apply theme to ui-preferences window
+                        //by sending a message to main process
+                        ipcRenderer.send('update-ui-settings-theme',theme);
                     }
                 }
             }
@@ -266,7 +269,7 @@ function showAvailableThemes() {
     });
 }
 $(document).ready(function() {
-    
+    themeManager.applySelectedTheme();
     if (localStorage.getItem("ui-preferences")) {
         let cssData = JSON.parse(localStorage.getItem("ui-preferences"));
         let cellFontSize = cssData['table-cell-size'];

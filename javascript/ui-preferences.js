@@ -42,6 +42,10 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
             `;
             error(message);
         }
+    },
+    'update-ui-settings-theme':(event,data)=>{
+        themeManager.setSelectedTheme(data);
+        themeManager.applySelectedTheme();
     }
 });
 $(document).ready(function() {
