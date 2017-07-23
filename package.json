@@ -6,13 +6,12 @@
     "start": "sudo electron ."
   },
   "dependencies": {
-    "asar": "^0.13.0",
-    "dotenv": "^2.0.0",
-    "electron": "^1.4.13",
-    "electron-prebuilt": "^1.4.13",
-    "electron-pug": "^1.5.1",
-    "md5": "^2.1.0",
-    "system-font-families": "^0.5.0"
+    "asar": "latest",
+    "dotenv": "latest",
+    "electron": "latest",
+    "electron-pug": "latest",
+    "md5": "latest",
+    "system-font-families": "latest"
   },
   "description": "While searching a GUI service manager for Ubuntu 17.04 I realized that there isn't anything out there. That's why I will try to make one using Electron",
   "keywords": [
