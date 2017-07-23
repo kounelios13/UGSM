@@ -39,6 +39,7 @@ class ThemeManager {
     }
     setSelectedTheme(theme) {
         this.selectedTheme = theme;
+        this.saveThemes();
     }
     getSelectedTheme() {
         return this.selectedTheme;
