@@ -24,7 +24,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kounelios13/ubuntu-graphical-service-manager.git"
+    "url": "git+https://github.com/kounelios13/ugsm.git"
   },
   "bugs": {
     "url": "https://github.com/kounelios13/ubuntu-graphical-service-manager/issues"
