@@ -127,10 +127,9 @@ function createMainWindowMenuBar() {
                     //hide ui preferences window
                     //but don't destroy it
                     uiPreferencesWin.hide();
-                    //If in a future version I decide to switch
-                    //to hard reset I will have to restart ui preferences window()
                 }
                 window.reload();
+                uiPreferencesWin.reload();
             }
         }, {
             type: 'separator'
