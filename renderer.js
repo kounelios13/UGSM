@@ -266,7 +266,7 @@ function showAvailableThemes() {
     });
 }
 $(document).ready(function() {
-    themeManager.applySelectedTheme();
+    
     if (localStorage.getItem("ui-preferences")) {
         let cssData = JSON.parse(localStorage.getItem("ui-preferences"));
         let cellFontSize = cssData['table-cell-size'];

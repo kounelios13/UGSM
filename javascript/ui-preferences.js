@@ -9,6 +9,8 @@ const {
 } = require('../custom_modules/utils.js');
 const Binder = require('../classes/binder.js');
 const SystemFontManager = require('system-font-families').default;
+const ThemeManagerBuilder = require('../classes/themeManager.js');
+const themeManager = new ThemeManagerBuilder(JSON.parse(localStorage.getItem('theme-manager-files')));
 const fonts = new SystemFontManager().getFontsSync();
 var fragment = document.createDocumentFragment();
 var ipcRendererBinder = new Binder(ipcRenderer, {
@@ -24,16 +26,16 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
             "background-size": "cover"
         });
     },
-    'export-status':(event,data)=>{
+    'export-status': (event, data) => {
         //Time to see whether we succeed 
         //to export our ui settings as a theme or not
-        if(data.fileExported){
-            if(data.permissionsChanged){
+        if (data.fileExported) {
+            if (data.permissionsChanged) {
                 success('Your ui settings have been exported as a UGSM theme');
-            }else{
+            } else {
                 warning('Your ui settings have been exported as a UGSM theme.However this theme will be read only which means no editable');
             }
-        }else{
+        } else {
             let message = `
                 Couldn't export your ui settings as a UGSM theme.See error log below
                 <textarea class='form-control text-danger'>${data.error}</textarea>
@@ -43,6 +45,7 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
     }
 });
 $(document).ready(function() {
+    themeManager.applySelectedTheme();
     var fontList = document.getElementById('font-list');
     var cellFontSizeSlider = document.getElementById('cell-font-size');
     //Check if there are any user preferences to load
@@ -113,12 +116,12 @@ $(document).ready(function() {
                 if (answer) {
                     localStorage.removeItem('ui-preferences');
                     confirm({
-                        message:'Do you want to reset UGSM to its default settings(Default theme and no custom configurations)?',
-                        callback:(answer)=>{
-                            if(answer){
+                        message: 'Do you want to reset UGSM to its default settings(Default theme and no custom configurations)?',
+                        callback: (answer) => {
+                            if (answer) {
                                 localStorage.removeItem('theme-manager-files');
                                 success('UGSM reseted to default configuration.Please restart application');
-                            }else{
+                            } else {
                                 success('UI preferences cleared.Please restart application');
                             }
                         }
@@ -146,6 +149,6 @@ body{
     font-size:${prefs['table-cell-size']}px;
 }
             `;
-        ipcRenderer.send('export-settings-as-theme',cssString);
+        ipcRenderer.send('export-settings-as-theme', cssString);
     });
 });
