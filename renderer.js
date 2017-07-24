@@ -53,12 +53,10 @@ var createServiceListTable = (data) => {
         let startServiceLink = createServiceLink('start', data[i].name);
         let stopServiceLink = createServiceLink('stop', data[i].name);
         let restartServiceLink = createServiceLink('restart', data[i].name);
-        actionCell.appendChild(startServiceLink);
-        actionCell.appendChild(stopServiceLink);
-        actionCell.appendChild(restartServiceLink);
-        row.appendChild(service);
-        row.appendChild(status);
-        row.appendChild(actionCell);
+        //Using append() instead of appendChild()
+        //read more here: https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/append
+        actionCell.append(startServiceLink,stopServiceLink,restartServiceLink);
+        row.append(service,status,actionCell);
         fragment.appendChild(row);
     }
     document.querySelector("tbody").innerHTML = "";
