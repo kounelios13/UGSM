@@ -161,6 +161,15 @@ function preserveWindow(window) {
         window.hide();
     });
 }
+//When dragging a file into an electron app
+//electron will try to navigate to this file
+//prevent it from happening
+//@param window The BrowserWindow instance which we want to prevent from navigating to a file
+function preventNavigation(window){
+    window.webContents.on('will-navigate',(e,_)=>{
+        e.preventDefault();
+    });
+}
 function createWindow() {
     createTrayIcon();
     win = new BrowserWindow({
@@ -203,6 +212,8 @@ function createWindow() {
         slashes: true
     }));
     preserveWindow(uiPreferencesWin);
+    preventNavigation(win);
+    preventNavigation(uiPreferencesWin);
     createMainWindowMenuBar();
 }
 const appBinder = new Binder(app, {
