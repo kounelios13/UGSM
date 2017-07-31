@@ -55,14 +55,24 @@ var createServiceListTable = (data) => {
         let restartServiceLink = createServiceLink('restart', data[i].name);
         //Using append() instead of appendChild()
         //read more here: https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/append
-        actionCell.append(startServiceLink,stopServiceLink,restartServiceLink);
-        row.append(service,status,actionCell);
+
+        try {
+            actionCell.append(startServiceLink, stopServiceLink, restartServiceLink);
+            row.append(service, status, actionCell);
+        } catch (e) {
+            //If we are here it means that chrome version is < 54 and append() is not supported
+            [startServiceLink, stopServiceLink, restartServiceLink].forEach(node => actionCell.appendChild(node));
+            [service, status, actionCell].forEach(node =>
+                row.appendChild(node);
+            }
+        }
         fragment.appendChild(row);
     }
     document.querySelector("tbody").innerHTML = "";
     document.querySelector("tbody").appendChild(fragment);
 };
 serviceEmmiter.on('receive-services', (data) => {
+    console.log('Fuck it')
     services = data;
     createServiceListTable(services);
     //Hide only the startup dialog modal
@@ -257,7 +267,7 @@ function showAvailableThemes() {
                         themeManager.applySelectedTheme();
                         //We also need to apply theme to ui-preferences window
                         //by sending a message to main process
-                        ipcRenderer.send('update-ui-settings-theme',theme);
+                        ipcRenderer.send('update-ui-settings-theme', theme);
                     }
                 }
             }
@@ -316,7 +326,7 @@ $(document).ready(function() {
         themeManager.saveThemes();
     }).on('show.bs.modal', '.theme-selection-modal', function() {
         let selectedThemeIndex = themeManager.getSelectedThemeIndex();
-        if(selectedThemeIndex == -1){
+        if (selectedThemeIndex == -1) {
             //We haven't selected any theme so we just exit this part of the program
             return;
         }
