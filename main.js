@@ -7,7 +7,7 @@ const {
     Tray
 } = require('electron');
 const fs = require('fs');
-const exec = require('child_process').exec;
+const {exec} = require('child_process');
 const url = require('url');
 const path = require('path');
 const Binder = require('./classes/binder.js');

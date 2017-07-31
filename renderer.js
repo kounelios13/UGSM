@@ -72,7 +72,6 @@ var createServiceListTable = (data) => {
     document.querySelector("tbody").appendChild(fragment);
 };
 serviceEmmiter.on('receive-services', (data) => {
-    console.log('Fuck it')
     services = data;
     createServiceListTable(services);
     //Hide only the startup dialog modal

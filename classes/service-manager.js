@@ -1,5 +1,6 @@
-const exec = require('child_process').exec;
+const {exec} = require('child_process');
 const Binder = require('./binder.js');
+const serviceCommands = require('../custom_modules/service-commands.js');
 class ServiceManager {
     constructor(emmiter) {
         if(emmiter === undefined || typeof emmiter != 'object'){
@@ -9,42 +10,7 @@ class ServiceManager {
         this._emmiter = emmiter;
     }
     requestServices(event, data) {
-        exec("service --status-all", (err, stdout, stderr) => {
-            if (!err) {
-                let services = stdout.split("\n");
-                let service = null;
-                let activeServices = services.filter(service => service.indexOf("+") != -1)
-                    .map(srv => {
-                        let status = "active";
-                        let name = srv.split("]")[1].trim();
-                        service = {
-                            name,
-                            status
-                        };
-                        return service;
-                    }).sort((a, b) => {
-                        a = a.name.toUpperCase();
-                        b = b.name.toUpperCase();
-                        return a < b ? -1 : a > b ? 1 : 0;
-                    });
-                let inactiveServices = services.filter(service => service.indexOf("-") != -1)
-                    .map(srv => {
-                        let status = "inactive";
-                        let name = srv.split("]")[1].trim();
-                        service = {
-                            name,
-                            status
-                        };
-                        return service;
-                    }).sort((a, b) => {
-                        a = a.name.toUpperCase();
-                        b = b.name.toUpperCase();
-                        return a < b ? -1 : a > b ? 1 : 0;
-                    });
-                this._services = [...activeServices, ...inactiveServices];
-            }
-            this._emmiter.emit('receive-services', this._services);
-        });
+        serviceCommands.listAllServices(this._emmiter);
     }
     updateServiceStatus(serviceName, status) {
         //filter() returns an array

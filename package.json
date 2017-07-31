@@ -8,7 +8,7 @@
   "dependencies": {
     "asar": "latest",
     "dotenv": "latest",
-    "electron": "latest",
+    "electron": "^1.6.11",
     "electron-pug": "latest",
     "md5": "latest",
     "system-font-families": "latest"
