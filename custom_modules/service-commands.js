@@ -8,9 +8,9 @@ const {exec} = require('child_process');
 //@param e An EventEmmiter that will be used to send services tp renderer process
 function listAllServices(e){
     //@TODO
-    //Sort services depending on their status and their name
+    //Instead of writing exec 2 times just write it once and pass a variable 
+    //that contains the command to be executed based on the process.platform
     let services = [];
-    console.log('Will it be')
     if(process.platform == 'win32'){
         exec('wmic service get name,state',(err,stdout,stderr)=>{
             if(!err){
