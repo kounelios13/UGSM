@@ -40,6 +40,7 @@ class ServiceManager {
                 this.updateServiceStatus(service,'inactive');
             }
         });
+        
     }
     restartService(service) {
         let command = `sudo service ${service} restart && service ${service} status | grep "Active"`;
