@@ -129,5 +129,6 @@ function stopService(e, service, callback) {
     }
 }
 module.exports = {
-    listAllServices
+    listAllServices,
+    stopService
 };
