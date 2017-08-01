@@ -72,7 +72,6 @@ var createServiceListTable = (data) => {
     document.querySelector("tbody").appendChild(fragment);
 };
 serviceEmmiter.on('receive-services', (data) => {
-    console.log('Fuck it')
     services = data;
     createServiceListTable(services);
     //Hide only the startup dialog modal
@@ -99,6 +98,7 @@ var serviceEmmiterBinder = new Binder(serviceEmmiter, {
     'service-restart-status': (data) => {
         if (data.status == "success") {
             success('Service has been restarted');
+            updateServiceStatus(data.name,'active');
         } else {
             error(`Couldn't restart service`);
         }

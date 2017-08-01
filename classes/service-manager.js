@@ -107,7 +107,8 @@ class ServiceManager {
         let command = `sudo service ${service} restart && service ${service} status | grep "Active"`;
         exec(command, (err, stdout, stderr) => {
             let response = {
-                status: "failure"
+                status: "failure",
+                name:service
             };
             if (!err && stdout) {
                 //stdout format
