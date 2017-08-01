@@ -28,45 +28,17 @@ class ServiceManager {
         return this._services;
     }
     startService(service) {
-        exec(`sudo service ${service} start`, (err, stdout, stderr) => {
-            let response = {
-                status: "success",
-                name: service
-            };
-            if (err) {
-                response.status = "failure";
-            } else {
-                this.updateServiceStatus(service, 'active');
+        serviceCommands.startService(this._emmiter,service,(response)=>{
+            if(response.status == 'success'){
+                this.updateServiceStatus(service,'active');
             }
-            this._emmiter.emit('service-activate-status', response);
         });
     }
     stopService(service) {
-        let command = `
-            sudo service ${service} stop && service ${service} status | grep "Active"
-        `;
-        exec(command, (err, stdout, stderr) => {
-            let response = {
-                status: "success",
-                //Send name of process that was asked to be terminated
-                name: service
-            };
-            if (err) {
-                response.status = "failure";
+        serviceCommands.stopService(this._emmiter,service,(response)=>{
+            if(response.status == 'success'){
+                this.updateServiceStatus(service,'inactive');
             }
-            if (!err && stdout) {
-                //stdout format
-                //e.g. format of a running service
-                //Active : active (running)
-                let status = stdout.split("(")[1].split(")")[0];
-                let serviceStopped = status == "dead";
-                if (!serviceStopped) {
-                    response.status = "failure";
-                } else {
-                    this.updateServiceStatus(service, 'inactive');
-                }
-            }
-            this._emmiter.emit('service-stop-status', response);
         });
     }
     restartService(service) {

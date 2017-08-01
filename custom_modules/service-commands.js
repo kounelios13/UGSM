@@ -3,9 +3,6 @@ const {
 } = require('child_process');
 //This module
 //will provide cross platform function to start stop and restart a service
-
-
-
 //List all system services
 //@param e An EventEmmiter that will be used to send services tp renderer process
 function listAllServices(e) {
@@ -28,7 +25,7 @@ function listAllServices(e) {
                     //Example of how a service item looks like
                     //mongodb         RUNNING
                     let name = service.slice(0, spaceIndex).toString().trim();
-                    let status = service.slice(spaceIndex + 1).toString() == 'Running' ? 'Active' : 'Inactive';
+                    let status = service.slice(spaceIndex + 1).toString() == 'Running' ? 'active' : 'inactive';
                     return {
                         name,
                         status
@@ -82,12 +79,14 @@ function listAllServices(e) {
 //@param service The service to stop
 //@param callback A callback funtion that takes the status of a service as argument
 function stopService(e, service, callback) {
-    //@TODO
-    //We will need a way to let service manager (not the renderer process) to know if requested
-    //service has stopped so as for service manager to update its _services array
     if (process.platform == 'win32') {
         let command = `net stop ${service} 
             &&  sc query ${service} | findstr RUNNING`;
+        //Why do we use findstr RUNNING instead of STOPPED?
+        //The reason is simple 
+        //When a service is stopped and you do a query which tries to find that the service is RUNNING
+        //but since this service is now stopped checking against RUNNING will return an empty string
+        //which means that the service is no longer running
         exec(command, (err, stdout, stderr) => {
             let response = {
                 status: 'failure'
@@ -99,9 +98,65 @@ function stopService(e, service, callback) {
             callback(response);
         });
     } else {
-
+        let command = `
+            sudo service ${service} stop && service ${service} status | grep "Active"
+        `;
+        exec(command, (err, stdout, stderr) => {
+            let response = {
+                status: "success",
+                //Send name of process that was asked to be terminated
+                name: service
+            };
+            if (err) {
+                response.status = "failure";
+            }
+            if (!err && stdout) {
+                //stdout format
+                //e.g. format of a running service
+                //Active : active (running)
+                let status = stdout.split("(")[1].split(")")[0];
+                let serviceStopped = status == "dead";
+            }
+            e.emit('service-stop-status', response);
+            callback(response);
+        });
+    }
+}
+//start a given service
+//@param service The service to start
+//@param callback A callback funtion that takes the status of a service as argument
+function startService(e,service,callback){
+    let command = null;
+    if(process.platform=='win32'){
+        //Why do we use findstr STOPPED instead of RUNNING?
+        //The reason is simple 
+        //When a service is started and you do a query which tries to find that the service is STOPPED
+        //but since this service is now started checking against STOPPED will return an empty string
+        //which means that the service is no longer running
+        command = `net start ${service} && sc query ${service} | findstr STOPPED`
+        exec(command,(err,stdout,stderr)=>{
+            let response = {status:'failure',name:service};
+            //If service is started when we check it status against STOPPED we should not get any output just an empty string
+            if(!err && !stdout.length){
+                response.status = 'success';
+            }
+            e.emit('service-start-status',response);
+            callback(response);
+        });
+    } else{
+        command = `sudo service ${service} start`;
+        exec(command,(err,stdout,stderr)=>{
+            let response = {status:'failure',name:service};
+            if(!err){
+                response.status = 'success';
+            }
+            e.emit('service-start-status',response);
+            callback(response);
+        });
     }
 }
 module.exports = {
-    listAllServices
+    listAllServices,
+    stopService,
+    startService
 };
