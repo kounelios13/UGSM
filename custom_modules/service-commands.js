@@ -99,7 +99,33 @@ function stopService(e, service, callback) {
             callback(response);
         });
     } else {
-
+        let command = `
+            sudo service ${service} stop && service ${service} status | grep "Active"
+        `;
+        exec(command, (err, stdout, stderr) => {
+            let response = {
+                status: "success",
+                //Send name of process that was asked to be terminated
+                name: service
+            };
+            if (err) {
+                response.status = "failure";
+            }
+            if (!err && stdout) {
+                //stdout format
+                //e.g. format of a running service
+                //Active : active (running)
+                let status = stdout.split("(")[1].split(")")[0];
+                let serviceStopped = status == "dead";
+                if (!serviceStopped) {
+                    response.status = "failure";
+                } else {
+                    this.updateServiceStatus(service, 'inactive');
+                }
+            }
+            e.emit('service-stop-status', response);
+            callback(response);
+        });
     }
 }
 module.exports = {
