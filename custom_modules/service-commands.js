@@ -5,38 +5,36 @@ const {
 //will provide cross platform function to start stop and restart a service
 //List all system services
 //@param e An EventEmmiter that will be used to send services tp renderer process
-function listAllServices(e) {
+function listAllServices(e){
     //@TODO
-    //Instead of writing exec 2 times just write it once and pass a variable 
-    //that contains the command to be executed based on the process.platform
+    //Sort services depending on their status and their name
     let services = [];
-    if (process.platform == 'win32') {
-        exec('wmic service get name,state', (err, stdout, stderr) => {
-            if (!err) {
+    if(process.platform == 'win32'){
+        exec('wmic service get name,state',(err,stdout,stderr)=>{
+            if(!err){
                 services = stdout.split('\r\n');
                 //First item of services is the following line
                 //Name       Service
                 //We don't need it
                 services.shift();
-                services = services.map(service => {
+                services = services.map(service=>{
                     //Really important
                     service = service.trim();
                     let spaceIndex = service.lastIndexOf(' ');
                     //Example of how a service item looks like
                     //mongodb         RUNNING
-                    let name = service.slice(0, spaceIndex).toString().trim();
-                    let status = service.slice(spaceIndex + 1).toString() == 'Running' ? 'active' : 'inactive';
+                    let name = service.slice(0,spaceIndex).toString().trim();
+                    let status = service.slice(spaceIndex+1).toString() == 'Running'?'active':'inactive';
                     return {
-                        name,
-                        status
+                        name,status
                     };
                 });
-                services = [...services.filter(s => s.status == 'Active'), ...services.filter(s => s.status == 'Inactive')];
+                services = [...services.filter(s=>s.status == 'active'),...services.filter(s=>s.status == 'inactive')];
             }
-            e.emit('receive-services', services);
+            e.emit('receive-services',services);
         });
-    } else {
-        exec('service --status -all', (err, stdout, stderr) => {
+    }else{
+        exec('service --status -all',(err,stdout,stderr)=>{
             if (!err) {
                 services = stdout.split("\n");
                 let service = null;
@@ -69,7 +67,7 @@ function listAllServices(e) {
                         return a < b ? -1 : a > b ? 1 : 0;
                     });
                 services = [...activeServices, ...inactiveServices];
-                e.emit('receive-services', services);
+                e.emit('receive-services',services);
             }
         });
     }
@@ -140,7 +138,7 @@ function startService(e,service,callback){
             if(!err && !stdout.length){
                 response.status = 'success';
             }
-            e.emit('service-start-status',response);
+            e.emit('service-activate-status',response);
             callback(response);
         });
     } else{
@@ -153,6 +151,13 @@ function startService(e,service,callback){
             e.emit('service-start-status',response);
             callback(response);
         });
+    }
+}
+
+function restartService(e,service,callback){
+    let command = null;
+    if(process.platform != 'win32'){
+        command = `sudo service ${$service} && service ${service} status | grep "Active"`;
     }
 }
 module.exports = {

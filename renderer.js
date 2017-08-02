@@ -55,16 +55,15 @@ var createServiceListTable = (data) => {
         let restartServiceLink = createServiceLink('restart', data[i].name);
         //Using append() instead of appendChild()
         //read more here: https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/append
-
         try {
             actionCell.append(startServiceLink, stopServiceLink, restartServiceLink);
             row.append(service, status, actionCell);
         } catch (e) {
             //If we are here it means that chrome version is < 54 and append() is not supported
             [startServiceLink, stopServiceLink, restartServiceLink].forEach(node => actionCell.appendChild(node));
-            [service, status, actionCell].forEach(node =>
+            [service, status, actionCell].forEach(node => {
                 row.appendChild(node);
-            }
+            });
         }
         fragment.appendChild(row);
     }
@@ -137,7 +136,6 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
         let tableCellFontSize = data['table-cell-size'];
         $("body").css(data);
         $("table").css("font-size", `${tableCellFontSize}px`);
-
     },
     'select-theme': () => {
         showAvailableThemes();
@@ -177,11 +175,9 @@ var updateServiceStatus = (serviceName, status) => {
         }
     }
 };
-
 function startService(service) {
     serviceManager.startService(service);
 }
-
 function stopService(service) {
     confirm({
         message: `Are you sure you want to stop ${service} service?`,
@@ -192,7 +188,6 @@ function stopService(service) {
         }
     });
 }
-
 function restartService(service) {
     serviceManager.restartService(service);
 }
