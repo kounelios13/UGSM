@@ -5,36 +5,37 @@ const {
 //will provide cross platform function to start stop and restart a service
 //List all system services
 //@param e An EventEmmiter that will be used to send services tp renderer process
-function listAllServices(e){
+function listAllServices(e) {
     //@TODO
     //Sort services depending on their status and their name
     let services = [];
-    if(process.platform == 'win32'){
-        exec('wmic service get name,state',(err,stdout,stderr)=>{
-            if(!err){
+    if (process.platform == 'win32') {
+        exec('wmic service get name,state', (err, stdout, stderr) => {
+            if (!err) {
                 services = stdout.split('\r\n');
                 //First item of services is the following line
                 //Name       Service
                 //We don't need it
                 services.shift();
-                services = services.map(service=>{
+                services = services.map(service => {
                     //Really important
                     service = service.trim();
                     let spaceIndex = service.lastIndexOf(' ');
                     //Example of how a service item looks like
                     //mongodb         RUNNING
-                    let name = service.slice(0,spaceIndex).toString().trim();
-                    let status = service.slice(spaceIndex+1).toString() == 'Running'?'active':'inactive';
+                    let name = service.slice(0, spaceIndex).toString().trim();
+                    let status = service.slice(spaceIndex + 1).toString() == 'Running' ? 'active' : 'inactive';
                     return {
-                        name,status
+                        name,
+                        status
                     };
                 });
-                services = [...services.filter(s=>s.status == 'active'),...services.filter(s=>s.status == 'inactive')];
+                services = [...services.filter(s => s.status == 'active'), ...services.filter(s => s.status == 'inactive')];
             }
-            e.emit('receive-services',services);
+            e.emit('receive-services', services);
         });
-    }else{
-        exec('service --status -all',(err,stdout,stderr)=>{
+    } else {
+        exec('service --status -all', (err, stdout, stderr) => {
             if (!err) {
                 services = stdout.split("\n");
                 let service = null;
@@ -67,13 +68,13 @@ function listAllServices(e){
                         return a < b ? -1 : a > b ? 1 : 0;
                     });
                 services = [...activeServices, ...inactiveServices];
-                e.emit('receive-services',services);
+                e.emit('receive-services', services);
             }
         });
     }
 }
-
 //stop a given service
+//@param e An instance of EventEmmiter
 //@param service The service to stop
 //@param callback A callback funtion that takes the status of a service as argument
 function stopService(e, service, callback) {
@@ -121,47 +122,82 @@ function stopService(e, service, callback) {
     }
 }
 //start a given service
+//@param e An instance of EventEmmiter
 //@param service The service to start
 //@param callback A callback funtion that takes the status of a service as argument
-function startService(e,service,callback){
+function startService(e, service, callback) {
     let command = null;
-    if(process.platform=='win32'){
+    if (process.platform == 'win32') {
         //Why do we use findstr STOPPED instead of RUNNING?
         //The reason is simple 
         //When a service is started and you do a query which tries to find that the service is STOPPED
         //but since this service is now started checking against STOPPED will return an empty string
         //which means that the service is no longer running
         command = `net start ${service} && sc query ${service} | findstr STOPPED`
-        exec(command,(err,stdout,stderr)=>{
-            let response = {status:'failure',name:service};
+        exec(command, (err, stdout, stderr) => {
+            let response = {
+                status: 'failure',
+                name: service
+            };
             //If service is started when we check it status against STOPPED we should not get any output just an empty string
-            if(!err && !stdout.length){
+            if (!err && !stdout.length) {
                 response.status = 'success';
             }
-            e.emit('service-activate-status',response);
+            e.emit('service-activate-status', response);
             callback(response);
         });
-    } else{
+    } else {
         command = `sudo service ${service} start`;
-        exec(command,(err,stdout,stderr)=>{
-            let response = {status:'failure',name:service};
-            if(!err){
+        exec(command, (err, stdout, stderr) => {
+            let response = {
+                status: 'failure',
+                name: service
+            };
+            if (!err) {
                 response.status = 'success';
             }
-            e.emit('service-start-status',response);
+            e.emit('service-start-status', response);
             callback(response);
         });
     }
 }
-
-function restartService(e,service,callback){
-    let command = null;
-    if(process.platform != 'win32'){
-        command = `sudo service ${$service} && service ${service} status | grep "Active"`;
+//This function restarts a service
+//It firsts stops it and then starts it
+//@param e An instance of EventEmmiter
+//@param service Service to restart
+//@param callback A function to execute at the end
+function restartService(e, service, callback) {
+    //Because restarting a service on windows involve 2 different function calls
+    //check if we are not using windows
+    if (process.platform != 'win32') {
+        exec(`sudo service ${service} restart`, (err, stdout, stderr) => {
+            if (!err) {
+                callback({
+                    status: 'success'
+                });
+            } else {
+                callback({
+                    status: 'failure'
+                });
+            }
+        });
+    } else {
+        stopService(e, service, (response) => {
+            if (response.status == 'success') {
+                //Service stopped.Now try to start it
+                startService(e, service, (response) => {
+                    callback(response);
+                });
+            } else {
+                //Failed to stop service
+                callback(response);
+            }
+        });
     }
 }
 module.exports = {
     listAllServices,
     stopService,
-    startService
+    startService,
+    restartService
 };
