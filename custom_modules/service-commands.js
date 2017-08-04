@@ -171,25 +171,26 @@ function restartService(e, service, callback) {
     //check if we are not using windows
     if (process.platform != 'win32') {
         exec(`sudo service ${service} restart`, (err, stdout, stderr) => {
-            if (!err) {
-                callback({
-                    status: 'success'
-                });
+            let response = {};
+            if (err == null) {
+                response.status = 'success';
             } else {
-                callback({
-                    status: 'failure'
-                });
+                response.status = 'failure';
             }
+            e.emit('service-restart-status', response);
+            callback(response);
         });
     } else {
         stopService(e, service, (response) => {
             if (response.status == 'success') {
                 //Service stopped.Now try to start it
                 startService(e, service, (response) => {
+                    e.emit('service-restart-status', response);
                     callback(response);
                 });
             } else {
                 //Failed to stop service
+                e.emit('service-restart-status', response);
                 callback(response);
             }
         });

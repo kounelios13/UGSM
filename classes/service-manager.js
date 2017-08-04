@@ -40,25 +40,11 @@ class ServiceManager {
                 this.updateServiceStatus(service,'inactive');
             }
         });
-        
     }
-    restartService(service) {
-        let command = `sudo service ${service} restart && service ${service} status | grep "Active"`;
-        exec(command, (err, stdout, stderr) => {
-            let response = {
-                status: "failure"
-            };
-            if (!err && stdout) {
-                //stdout format
-                //e.g. format of a running service
-                //Active : active (running)
-                status = stdout.split("(")[1].split(")")[0];
-                let serviceRestarted = status == "running";
-                if (serviceRestarted) {
-                    response.status = "success";
-                    this.updateServiceStatus(service, 'active');
-                }
-                this._emmiter.emit('service-restart-status', response);
+    restartService(service){
+        serviceCommands.restartService(this._emmiter,service,(response)=>{
+            if(response.status == 'success'){
+                this.updateServiceStatus(service,'active');
             }
         });
     }
