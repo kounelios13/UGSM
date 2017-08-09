@@ -83,7 +83,7 @@ var serviceEmmiterBinder = new Binder(serviceEmmiter, {
             success('Service has been stopped');
             updateServiceStatus(data.name, 'inactive');
         } else {
-            error(`Couldn't stop service`);
+            error(data.err);
         }
     },
     'service-activate-status': (data) => {
@@ -92,7 +92,7 @@ var serviceEmmiterBinder = new Binder(serviceEmmiter, {
             success('Service has been started');
             updateServiceStatus(data.name, "active");
         } else {
-            error(`Couldn't start service`);
+            error(data.err);
         }
     },
     'service-restart-status': (data) => {
@@ -100,7 +100,7 @@ var serviceEmmiterBinder = new Binder(serviceEmmiter, {
             success('Service has been restarted');
             updateServiceStatus(data.name, 'active');
         } else {
-            error(`Couldn't restart service`);
+            error(data.err);
         }
     }
 });
