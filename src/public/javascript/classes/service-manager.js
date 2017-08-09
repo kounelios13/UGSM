@@ -69,6 +69,7 @@ class ServiceManager {
             };
             if (err) {
                 response.status = "failure";
+                response.err = err.includes('Access Denied')?`Failed to start ${service}.Make sure you run this app as root`:err;
             } else {
                 this.updateServiceStatus(service, 'active');
             }
@@ -87,6 +88,7 @@ class ServiceManager {
             };
             if (err) {
                 response.status = "failure";
+                response.err = err.includes('Access Denied') ? `Failed to stop ${service}.Make sure you run this app as root` : err;
             }
             if (!err && stdout) {
                 //stdout format
@@ -120,8 +122,10 @@ class ServiceManager {
                     response.status = "success";
                     this.updateServiceStatus(service, 'active');
                 }
-                this._emmiter.emit('service-restart-status', response);
+            }else{
+                response.err = err.include('Access Denied') ? `Failed to restart ${service}.Make sure you run this app as root` : err;
             }
+            this._emmiter.emit('service-restart-status', response);
         });
     }
 }
