@@ -3,7 +3,7 @@
   "version": "1.0.4",
   "main": "src/main.js",
   "scripts": {
-    "start": "sudo electron ."
+    "start": "sudo electron . false"
   },
   "dependencies": {
     "asar": "latest",
