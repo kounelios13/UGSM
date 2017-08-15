@@ -12,6 +12,9 @@ const url = require('url');
 const path = require('path');
 const Binder = require('./public/javascript/classes/binder.js');
 const pug = require('electron-pug')({pretty: true});
+//This will be used to quit app in case something happens due to bad code if not in production mode
+//First command line arg is node 2nd is the name of the script and the third one is our production
+let production = process.argv[2] == 'true';
 let win = null;
 let uiPreferencesWin = null;
 var allowAppTermination = false;
@@ -120,7 +123,7 @@ function createMainWindowMenuBar() {
             accelerator: 'CmdOrCtrl+R',
             click: (_, window) => {
                 if (uiPreferencesWin.isVisible()) {
-                    //When soft restarting apprelication
+                    //When soft restarting application
                     //hide ui preferences window
                     //but don't destroy it
                     uiPreferencesWin.hide();
@@ -187,12 +190,12 @@ function createWindow() {
     //Prevent user from exiting UGSM
     //without confirming
     win.on('close', (e) => {
-        if (!allowAppTermination) {
-            //Means that close event hasn't been triggered again
+        if (!allowAppTermination && production) {
+            //Means that close event hasn't been triggered again and we are in production mode
             e.preventDefault();
             win.webContents.send('request-exit-confirmation');
         } else {
-            //close event has been triggered
+            //close event has been triggered or we are not in production mode
             //now exit
             app.quit();
         }
@@ -229,7 +232,7 @@ const appBinder = new Binder(app, {
         if (win === null) {
             createWindow();
         }
-    }
+    },
 });
 const ipcMainBinder = new Binder(ipcMain, {
     'show-application': () => {
