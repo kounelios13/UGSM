@@ -1,16 +1,18 @@
 {
-  "name": "gui_service_manager",
+  "name": "gui-service-manager",
   "version": "1.0.4",
   "main": "src/main.js",
   "scripts": {
-    "start": "sudo electron . false"
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "dependencies": {
     "asar": "latest",
     "dotenv": "latest",
-    "electron": "latest",
-    "electron-pug": "latest",
+    "electron-compile": "^6.4.1",
     "md5": "latest",
+    "sudo-prompt": "^7.1.1",
     "system-font-families": "latest"
   },
   "description": "While searching a GUI service manager for Ubuntu 17.04 I realized that there isn't anything out there. That's why I will try to make one using Electron",
@@ -29,5 +31,43 @@
   "bugs": {
     "url": "https://github.com/kounelios13/ubuntu-graphical-service-manager/issues"
   },
-  "homepage": "https://github.com/kounelios13/ubuntu-graphical-service-manager#readme"
+  "homepage": "https://github.com/kounelios13/ubuntu-graphical-service-manager#readme",
+  "devDependencies": {
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "electron-prebuilt-compile": "1.7.5"
+  },
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": [
+          "squirrel"
+        ],
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "deb"
+        ]
+      },
+      "electronPackagerConfig": {},
+      "electronWinstallerConfig": {
+        "name": ""
+      },
+      "electronInstallerDebian": {
+        "productName": "Ubuntu Graphical Service Manager",
+        "name": "ugsm",
+        "arch": "amd64"
+      },
+      "electronInstallerRedhat": {},
+      "github_repository": {
+        "owner": "",
+        "name": ""
+      },
+      "windowsStoreConfig": {
+        "packageName": ""
+      }
+    }
+  }
 }

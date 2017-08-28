@@ -11,10 +11,10 @@ const exec = require('child_process').exec;
 const url = require('url');
 const path = require('path');
 const Binder = require('./public/javascript/classes/binder.js');
-const pug = require('electron-pug')({pretty: true});
 //This will be used to quit app in case something happens due to bad code if not in production mode
 //First command line arg is node 2nd is the name of the script and the third one is our production
-let production = process.argv[2] == 'true';
+/*let production = process.argv[2] == 'true';*/
+let production = true;
 let win = null;
 let uiPreferencesWin = null;
 var allowAppTermination = false;
@@ -183,7 +183,7 @@ function createWindow() {
     });
     win.loadURL(url.format({
         /*pathname: path.join(__dirname, './services.html'),*/
-        pathname: path.join(__dirname, './public/views/index.pug'),
+        pathname: path.join(__dirname, './public/views/index.jade'),
         protocol: 'file:',
         slashes: true
     }));
@@ -208,7 +208,7 @@ function createWindow() {
         parent:win
     });
     uiPreferencesWin.loadURL(url.format({
-        pathname: path.join(__dirname, './public/views/ui-settings.pug'),
+        pathname: path.join(__dirname, './public/views/ui-settings.jade'),
         protocol: 'file:',
         slashes: true
     }));
@@ -298,7 +298,7 @@ ipcMainBinder.addEvents({
                         //Let the user know what happened
                         error 
                     };
-                    fs.chmod(fileName, 0666, (error) => {
+                    fs.chmod(fileName, '0666', (error) => {
                         if(!error){
                             exportStatus.permissionsChanged = true;
                         }

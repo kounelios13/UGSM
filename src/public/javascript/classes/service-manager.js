@@ -1,12 +1,18 @@
-const exec = require('child_process').exec;
+const {
+    exec
+} = require('child_process');
+const sudoExec = require('sudo-prompt').exec;
 const Binder = require('./binder.js');
 class ServiceManager {
     constructor(emmiter) {
-        if(emmiter === undefined || typeof emmiter != 'object'){
+        if (emmiter === undefined || typeof emmiter != 'object') {
             throw new Error('Expected an instance of EventEmmiter as 1 argument');
         }
         this._services = [];
         this._emmiter = emmiter;
+        this.sudoOptions = {
+            name: 'UGSM'
+        };
     }
     requestServices(event, data) {
         exec("service --status-all", (err, stdout, stderr) => {
@@ -62,14 +68,14 @@ class ServiceManager {
         return this._services;
     }
     startService(service) {
-        exec(`sudo service ${service} start`, (err, stdout, stderr) => {
+        sudoExec(`service ${service} start`, this.sudoOptions, (err, stdout, stderr) => {
             let response = {
                 status: "success",
                 name: service
             };
             if (err) {
                 response.status = "failure";
-                response.err = err.includes('Access Denied')?`Failed to start ${service}.Make sure you run this app as root`:err;
+                response.err = err.includes('Access Denied') ? `Failed to start ${service}.Make sure you run this app as root` : err;
             } else {
                 this.updateServiceStatus(service, 'active');
             }
@@ -78,9 +84,9 @@ class ServiceManager {
     }
     stopService(service) {
         let command = `
-            sudo service ${service} stop && service ${service} status | grep "Active"
+            service ${service} stop && service ${service} status | grep "Active"
         `;
-        exec(command, (err, stdout, stderr) => {
+        sudoExec(command, this.sudoOptions, (err, stdout, stderr) => {
             let response = {
                 status: "success",
                 //Send name of process that was asked to be terminated
@@ -88,7 +94,8 @@ class ServiceManager {
             };
             if (err) {
                 response.status = "failure";
-                response.err = err.includes('Access Denied') ? `Failed to stop ${service}.Make sure you run this app as root` : err;
+                response.err = err.includes('Access Denied') ? 
+                    `Failed to stop ${service}.Make sure you run this app as root or you  provide root password when prompted` : err;
             }
             if (!err && stdout) {
                 //stdout format
@@ -106,11 +113,11 @@ class ServiceManager {
         });
     }
     restartService(service) {
-        let command = `sudo service ${service} restart && service ${service} status | grep "Active"`;
-        exec(command, (err, stdout, stderr) => {
+        let command = `service ${service} restart && service ${service} status | grep "Active"`;
+        sudoExec(command, this.sudoOptions, (err, stdout, stderr) => {
             let response = {
                 status: "failure",
-                name:service
+                name: service
             };
             if (!err && stdout) {
                 //stdout format
@@ -122,7 +129,7 @@ class ServiceManager {
                     response.status = "success";
                     this.updateServiceStatus(service, 'active');
                 }
-            }else{
+            } else {
                 response.err = err.include('Access Denied') ? `Failed to restart ${service}.Make sure you run this app as root` : err;
             }
             this._emmiter.emit('service-restart-status', response);
