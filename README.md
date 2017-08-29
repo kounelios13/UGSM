@@ -16,4 +16,8 @@ To start `UGSM`:
 * cd into UGSM directory
 * open a terminal and type `npm start`
 
+# Generate a deb file
+You can generate a deb file by running `npm run make`
+You will find the generated file in the `out` directory that lies in the root of the project folder
+
 **See `UGSM` documentation [here](src/docs/documentation.md)**
