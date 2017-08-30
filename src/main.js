@@ -124,6 +124,7 @@ function createMainWindowMenuBar() {
     win.setMenu(menu);
 }
 //This function will hide a window instead of destroying it
+//@param {BrowserWindow} window The window we want to preserve
 function preserveWindow(window) {
     window.on('close', (e) => {
         e.preventDefault();
@@ -133,7 +134,7 @@ function preserveWindow(window) {
 //When dragging a file into an electron app
 //electron will try to navigate to this file
 //prevent it from happening
-//@param window The BrowserWindow instance which we want to prevent from navigating to a file
+//@param {BrowserWindow} window The BrowserWindow instance which we want to prevent from navigating to a file
 function preventNavigation(window){
     window.webContents.on('will-navigate',(e,_)=>{
         e.preventDefault();

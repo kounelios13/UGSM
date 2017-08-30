@@ -16,11 +16,12 @@ const themeManager = new ThemeManagerBuilder(JSON.parse(localStorage.getItem('th
 var serviceEmmiter = new EventEmmiter();
 var serviceManager = new ServiceManagerBuilder(serviceEmmiter);
 var services = [];
-//Utility function that will help us
-//create the 3 types of links we need for our service list(Start, Stop,Restart)
-//@param type Type of link to create(start,stop,restart)
-//@param name name of servie (.e.g apache2 ,mysql etc.)
-//@return serviceLink the link we created
+/**Utility function that will help us
+create the 3 types of links we need for our service list(Start, Stop,Restart) 
+*@param {String} type Type of link to create(start,stop,restart)
+*@param {String} name name of servie (.e.g apache2 ,mysql etc.)
+*@return serviceLink the link we created
+*/
 var createServiceLink = (type, name) => {
     let allowedTypes = ['start', 'stop', 'restart'];
     if (allowedTypes.indexOf(type) == -1) {
@@ -33,8 +34,9 @@ var createServiceLink = (type, name) => {
     serviceLink.classList.add('center-block');
     return serviceLink;
 };
-//Utility function that takes a list of services and creates a table with info from each service
-//@param data an array of service objects
+/** Utility function that takes a list of services and creates a table with info from each service
+*@param {Array}data an array of service objects
+*/
 var createServiceListTable = (data) => {
     if (!data.length) {
         error('Something happened.No data received.Probably unsupported platform');
@@ -157,9 +159,10 @@ var ipcRendererBinder = new Binder(ipcRenderer, {
         themeManager.saveThemes();
     }
 });
-//Utility function that finds a service by its name and updates its status
-//@param serviceName name of service to look for
-//@param status The updated status of the service
+/** Utility function that finds a service by its name and updates its status
+*@param {String} serviceName name of service to look for
+*@param {String} status The updated status of the service
+*/
 var updateServiceStatus = (serviceName, status) => {
     //.filter() returns an array
     //So first item in the array [0] will be our service object
@@ -197,8 +200,10 @@ function stopService(service) {
 function restartService(service) {
     serviceManager.restartService(service);
 }
-//Let the user choose a css file to use 
-//This way a user can create its own theme
+/**
+*Let the user choose a css file to use 
+*This way a user can create its own theme
+*/
 function showAvailableThemes() {
     //If theme-selection modal is open
     //we don't wan't to reshow it
