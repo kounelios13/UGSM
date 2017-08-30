@@ -11,6 +11,7 @@ const exec = require('child_process').exec;
 const url = require('url');
 const path = require('path');
 const Binder = require('./public/javascript/classes/binder.js');
+const {createTray} = require('./public/javascript/custom_modules/tray.js');
 //This will be used to quit app in case something happens due to bad code if not in production mode
 //First command line arg is node 2nd is the name of the script and the third one is our production
 /*let production = process.argv[2] == 'true';*/
@@ -19,42 +20,7 @@ let win = null;
 let uiPreferencesWin = null;
 var allowAppTermination = false;
 let trayIcon = null;
-function createTrayIcon() {
-    trayIcon = new Tray(`${__dirname}/icons/ugsm256x256.png`);
-    const trayMenuTemplate = [{
-        label: 'UI settings',
-        click: () => {
-            uiPreferencesWin.show();
-        }
-    }, {
-        type: 'separator'
-    }, {
-        label: 'Maximize',
-        click: (_, window) => {
-            win.maximize();
-        }
-    }, {
-        label: 'Minimize',
-        click: (_, window) => {
-            win.minimize();
-        }
-    }, {
-        label: 'Restart UGSM',
-        click: (_, window) => {
-            if (uiPreferencesWin.isVisible()) {
-                uiPreferencesWin.hide();
-            }
-            window.reload();
-        }
-    }, {
-        type: 'separator'
-    }, {
-        label: 'Quit UGSM',
-        role: 'quit'
-    }];
-    const trayMenu = Menu.buildFromTemplate(trayMenuTemplate);
-    trayIcon.setContextMenu(trayMenu);
-}
+
 function createMainWindowMenuBar() {
     const menuTemplate = [{
         label: 'File',
@@ -174,7 +140,6 @@ function preventNavigation(window){
     });
 }
 function createWindow() {
-    createTrayIcon();
     win = new BrowserWindow({
         height: 800,
         width: 1200,
@@ -212,6 +177,7 @@ function createWindow() {
         protocol: 'file:',
         slashes: true
     }));
+    createTray(win,uiPreferencesWin);
     preserveWindow(uiPreferencesWin);
     preventNavigation(win);
     preventNavigation(uiPreferencesWin);
