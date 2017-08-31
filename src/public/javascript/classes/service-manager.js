@@ -4,6 +4,7 @@ const {
 const sudoExec = require('sudo-prompt').exec;
 const Binder = require('./binder.js');
 /**
+*@class
 *A class used for stoping ,starting and restarting Ubuntu services
 */
 class ServiceManager {
@@ -21,7 +22,11 @@ class ServiceManager {
             name: 'UGSM'
         };
     }
-    requestServices(event, data) {
+    /**
+    * Request all system services
+    * @param {Event} event The event occured from the ipcRenderer protocol 
+    */
+    requestServices(event) {
         exec("service --status-all", (err, stdout, stderr) => {
             if (!err) {
                 let services = stdout.split("\n");
@@ -59,21 +64,41 @@ class ServiceManager {
             this._emmiter.emit('receive-services', this._services);
         });
     }
+    /**
+    * Update the status of a system service
+    * @param {String} serviceName The name of the service you want to update its status
+    * @param {String} status The new status of the service
+    */
     updateServiceStatus(serviceName, status) {
         //filter() returns an array
         //get that item using pop() and change its status
         this._services.filter(s => s.name == serviceName)
             .pop().status = status;
     }
+    /**
+    * Get all active services
+    * @returns {Array} activeServices An array containing the active services
+    */
     getActiveServices() {
-        return this._services.filter(s => s.status == "active");
+        let activeServices = this._services.filter(s => s.status == "active");
+        return activeServices;
     }
+    /**
+    * Get all inactive services
+    * @returns {Array} inactiveServices An array containing all inactive services
+    */
     getInactiveServices() {
-        return this._services.filter(s => s.status == "inactive");
+        let inactiveServices = this._services.filter(s => s.status == "inactive");
+        return inactiveServices
     }
     getAllServices() {
         return this._services;
     }
+
+    /**
+    * Start a system service 
+    * @param {String} service The name of the service to start
+    */
     startService(service) {
         sudoExec(`service ${service} start`, this.sudoOptions, (err, stdout, stderr) => {
             let response = {
@@ -89,6 +114,10 @@ class ServiceManager {
             this._emmiter.emit('service-activate-status', response);
         });
     }
+     /**
+    * Stop a system service 
+    * @param {String} service The name of the service to stop
+    */
     stopService(service) {
         let command = `
             service ${service} stop && service ${service} status | grep "Active"
@@ -119,6 +148,10 @@ class ServiceManager {
             this._emmiter.emit('service-stop-status', response);
         });
     }
+     /**
+    * Restart a system service 
+    * @param {String} service The name of the service to restart
+    */
     restartService(service) {
         let command = `service ${service} restart && service ${service} status | grep "Active"`;
         sudoExec(command, this.sudoOptions, (err, stdout, stderr) => {

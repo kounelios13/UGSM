@@ -19,8 +19,8 @@ var services = [];
 /**Utility function that will help us
 create the 3 types of links we need for our service list(Start, Stop,Restart) 
 *@param {String} type Type of link to create(start,stop,restart)
-*@param {String} name name of servie (.e.g apache2 ,mysql etc.)
-*@return serviceLink the link we created
+*@param {String} name name of service (.e.g apache2 ,mysql etc.)
+*@returns {String} serviceLink the link we created
 */
 var createServiceLink = (type, name) => {
     let allowedTypes = ['start', 'stop', 'restart'];
@@ -29,7 +29,7 @@ var createServiceLink = (type, name) => {
     }
     let serviceLink = document.createElement('a');
     serviceLink.href = `javascript:${type}Service('${name}')`; //e.g. type start -> javascript:startService()
-    serviceLink.innerText = `${type[0].toUpperCase()+type.slice(1)} Service` //Return first char of string capitallized and then return  the
+    serviceLink.innerText = `${type[0].toUpperCase()+type.slice(1)} Service` //Return first char of string capitalized and then return  the
         //rest of the string without the first char
     serviceLink.classList.add('center-block');
     return serviceLink;
@@ -205,8 +205,10 @@ function restartService(service) {
 *This way a user can create its own theme
 */
 function showAvailableThemes() {
-    //If theme-selection modal is open
-    //we don't wan't to reshow it
+    /**
+    *If theme-selection modal is open
+    *we don't want to show it again
+    */
     if ($(".theme-selection-modal").is(":visible")) {
         console.log('Theme selection modal is already open');
         return;
@@ -281,6 +283,7 @@ function showAvailableThemes() {
         className: 'dialog-info theme-selection-modal'
     });
 }
+/** @namespace */
 $(document).ready(function() {
     themeManager.applySelectedTheme();
     if (localStorage.getItem("ui-preferences")) {

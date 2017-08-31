@@ -1,3 +1,6 @@
+/**
+*@namespace main
+*/
 const {
     app,
     BrowserWindow,
@@ -123,24 +126,31 @@ function createMainWindowMenuBar() {
     const menu = Menu.buildFromTemplate(menuTemplate);
     win.setMenu(menu);
 }
-//This function will hide a window instead of destroying it
-//@param {BrowserWindow} window The window we want to preserve
+
+/**
+* Hide a window instead of destroying it when a user closes it
+*@param {BrowserWindow} window The window we want to hide
+*/
 function preserveWindow(window) {
     window.on('close', (e) => {
         e.preventDefault();
         window.hide();
     });
 }
-//When dragging a file into an electron app
-//electron will try to navigate to this file
-//prevent it from happening
-//@param {BrowserWindow} window The BrowserWindow instance which we want to prevent from navigating to a file
+
+/*
+* Prevent a window from navigating to a file when a user drags a file into a browser window
+*@param {BrowserWindow} window The BrowserWindow instance which we want to prevent from navigating to a file
+*/
 function preventNavigation(window){
     window.webContents.on('will-navigate',(e,_)=>{
         e.preventDefault();
     });
 }
-function createWindow() {
+/**
+* Creates the windows of the application
+*/
+function createWindows() {
     win = new BrowserWindow({
         height: 800,
         width: 1200,
@@ -184,8 +194,9 @@ function createWindow() {
     preventNavigation(uiPreferencesWin);
     createMainWindowMenuBar();
 }
+/** @namespace **/
 const appBinder = new Binder(app, {
-    ready: createWindow,
+    ready: createWindows,
     'window-all-closed': () => {
         // On macOS it is common for applications and their menu bar
         // to stay active until the user quits explicitly with Cmd + Q
@@ -197,10 +208,11 @@ const appBinder = new Binder(app, {
         // On macOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (win === null) {
-            createWindow();
+            createWindows();
         }
     },
 });
+/** @namespace **/
 const ipcMainBinder = new Binder(ipcMain, {
     'show-application': () => {
         win.show();
@@ -215,6 +227,9 @@ const ipcMainBinder = new Binder(ipcMain, {
         }
     }
 });
+/**
+* @memberof ipcMainBinder
+*/
 ipcMainBinder.addEvents({
     'show-open-dialog': (event, _) => {
         dialog.showOpenDialog({

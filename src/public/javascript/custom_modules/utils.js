@@ -1,4 +1,9 @@
+/**
+* @module utils
+*/
+
 /** 
+* @memberof utils
 *Display message using an info bootstrap modal
 *@param {String} message The message to display
 */
@@ -84,6 +89,7 @@ let rgb2hex = color => {
     }).join('');
     return hexColor;
 };
+
 module.exports = {
     info,
     success,

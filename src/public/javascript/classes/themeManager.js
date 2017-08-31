@@ -1,4 +1,5 @@
 /**
+ * @class
  * A class used to keep UGSM themes(mostly css file paths)
  */
 class ThemeManager {

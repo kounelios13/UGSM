@@ -7,9 +7,13 @@ const {
 } = require('path');
 let trayIcon = null;
 //This function is responsible for creating
-//a tray menu
-//@param {BrowserWindow} mainWindow The main window of our application
-//@param {BrowserWindow} settingsWindow The window that we will use to change our application settings
+/** @module tray */
+
+/**
+* Create a tray menu
+*@param {BrowserWindow} mainWindow The main window of our application
+*@param {BrowserWindow} settingsWindow The window that we will use to change our application settings
+*/
 function createTray(mainWindow,settingsWindow) {
     trayIcon = new Tray(join(__dirname, '../../../icons/ugsm256x256.png'));
     const template =  [{
