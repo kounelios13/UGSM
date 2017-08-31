@@ -3,7 +3,14 @@ const {
 } = require('child_process');
 const sudoExec = require('sudo-prompt').exec;
 const Binder = require('./binder.js');
+/**
+*A class used for stoping ,starting and restarting Ubuntu services
+*/
 class ServiceManager {
+    /**
+    *@constructor
+    *@param {EventEmmiter} emmiter An EventEmmter that will be used for sending custom messages
+    */
     constructor(emmiter) {
         if (emmiter === undefined || typeof emmiter != 'object') {
             throw new Error('Expected an instance of EventEmmiter as 1 argument');
