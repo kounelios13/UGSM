@@ -20,4 +20,13 @@ To start `UGSM`:
 You can generate a deb file by running `npm run make`
 You will find the generated file in the `out` directory that lies in the root of the project folder
 
+
+
 **See `UGSM` documentation [here](src/docs/documentation.md)**
+
+# Generate code documentation 
+Code documentation(not to be confused with `UGSM` documentation) can be generated using the following command :
+
+`npm run documentation`
+
+This will create a folder called `jsdoc` in the root of the project.Navigate there and open the `index.html`
