@@ -4,7 +4,6 @@
 const {
     app,
     BrowserWindow,
-    Menu,
     ipcMain,
     dialog,
     Tray
@@ -15,6 +14,7 @@ const url = require('url');
 const path = require('path');
 const Binder = require('./public/javascript/classes/binder.js');
 const {createTray} = require('./public/javascript/custom_modules/tray.js');
+const {createMenuBar} = require('./public/javascript/custom_modules/menubar.js');
 //This will be used to quit app in case something happens due to bad code if not in production mode
 //First command line arg is node 2nd is the name of the script and the third one is our production
 /*let production = process.argv[2] == 'true';*/
@@ -23,109 +23,6 @@ let win = null;
 let uiPreferencesWin = null;
 var allowAppTermination = false;
 let trayIcon = null;
-
-function createMainWindowMenuBar() {
-    const menuTemplate = [{
-        label: 'File',
-        submenu: [{
-            label: 'Exit UGSM',
-            accelerator: 'CmdOrCtrl+Q',
-            role: 'quit'
-        }]
-    }, {
-        label: 'Edit',
-        submenu: [{
-            role: 'copy'
-        }, {
-            role: 'paste'
-        }, {
-            role: 'selectall'
-        }, {
-            role: 'delete'
-        }]
-    }, {
-        label: 'View',
-        submenu: [{
-            label: 'Show only active services',
-            accelerator: 'Ctrl+Shift+1',
-            click: (_, window) => {
-                window.webContents.send('filter-services', {
-                    //View 0 means
-                    //Show only active services
-                    view: 0
-                });
-            }
-        }, {
-            label: 'Show only inactive services',
-            accelerator: 'Ctrl+Shift+2',
-            click: (_, window) => {
-                window.webContents.send('filter-services', {
-                    //View 1 means show only 
-                    //inactive services
-                    view: 1
-                })
-            }
-        }, {
-            label: 'Show all services',
-            accelerator: 'Ctrl+Shift+3',
-            click: (_, window) => {
-                window.webContents.send('filter-services', {
-                    //Show everything like
-                    //there is no tomorrow :p
-                    view: 2
-                });
-            }
-        }, {
-            type: 'separator'
-        }, {
-            label: 'Toggle Developer Tools',
-            accelerator: 'CmdOrCtrl+Shift+I',
-            click: (_, window) => {
-                if (window) {
-                    window.webContents.openDevTools();
-                }
-            }
-        }, {
-            type: 'separator'
-        }, {
-            label: 'Restart UGSM',
-            accelerator: 'CmdOrCtrl+R',
-            click: (_, window) => {
-                if (uiPreferencesWin.isVisible()) {
-                    //When soft restarting application
-                    //hide ui preferences window
-                    //but don't destroy it
-                    uiPreferencesWin.hide();
-                }
-                window.reload();
-                uiPreferencesWin.reload();
-            }
-        }, {
-            type: 'separator'
-        }, {
-            role: 'togglefullscreen'
-        }]
-    }, {
-        label: 'Preferences',
-        submenu: [{
-            label: 'UI settings',
-            accelerator: 'CmdOrCtrl+U',
-            click: () => {
-                if (!uiPreferencesWin.isVisible()) {
-                    uiPreferencesWin.show();
-                }
-            }
-        }, {
-            label: 'Select Theme',
-            accelerator: 'CmdOrCtrl+T',
-            click: (_, window) => {
-                window.webContents.send('select-theme');
-            }
-        }]
-    }];
-    const menu = Menu.buildFromTemplate(menuTemplate);
-    win.setMenu(menu);
-}
 
 /**
 * Hide a window instead of destroying it when a user closes it
@@ -192,7 +89,7 @@ function createWindows() {
     preserveWindow(uiPreferencesWin);
     preventNavigation(win);
     preventNavigation(uiPreferencesWin);
-    createMainWindowMenuBar();
+    createMenuBar(win,uiPreferencesWin);
 }
 /** @namespace **/
 const appBinder = new Binder(app, {
