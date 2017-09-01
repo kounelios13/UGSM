@@ -4,7 +4,6 @@ const {
 const sudoExec = require('sudo-prompt').exec;
 const Binder = require('./binder.js');
 /**
-*@class
 *A class used for stoping ,starting and restarting Ubuntu services
 */
 class ServiceManager {

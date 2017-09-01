@@ -39,7 +39,8 @@
     "babel-preset-react": "^6.24.1",
     "electron-forge": "^4.0.0",
     "electron-prebuilt-compile": "1.7.5",
-    "jsdoc": "^3.5.4"
+    "jsdoc": "^3.5.4",
+    "npm": "5.2.0"
   },
   "config": {
     "forge": {

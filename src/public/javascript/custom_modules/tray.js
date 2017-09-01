@@ -6,7 +6,6 @@ const {
     join
 } = require('path');
 let trayIcon = null;
-//This function is responsible for creating
 /** @module tray */
 
 /**

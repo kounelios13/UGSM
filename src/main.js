@@ -91,7 +91,7 @@ function createWindows() {
     preventNavigation(uiPreferencesWin);
     createMenuBar(win,uiPreferencesWin);
 }
-/** @namespace **/
+
 const appBinder = new Binder(app, {
     ready: createWindows,
     'window-all-closed': () => {
@@ -109,7 +109,7 @@ const appBinder = new Binder(app, {
         }
     },
 });
-/** @namespace **/
+/** @namespace ipcMainBinder */
 const ipcMainBinder = new Binder(ipcMain, {
     'show-application': () => {
         win.show();
@@ -125,6 +125,7 @@ const ipcMainBinder = new Binder(ipcMain, {
     }
 });
 /**
+* @method
 * @memberof ipcMainBinder
 */
 ipcMainBinder.addEvents({
