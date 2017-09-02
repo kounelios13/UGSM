@@ -62,7 +62,8 @@
       "electronInstallerDebian": {
         "productName": "Ubuntu Graphical Service Manager",
         "name": "ugsm",
-        "arch": "amd64"
+        "arch": "amd64",
+        "icon": "src/icons/ugsm256x256.png"
       },
       "electronInstallerRedhat": {},
       "github_repository": {
