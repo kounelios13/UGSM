@@ -6,7 +6,8 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "documentation": "jsdoc -d ./jsdoc  -r ./src"
+    "documentation": "jsdoc -d ./jsdoc  -r ./src",
+    "external-build":"git fetch && git pull && npm run make"
   },
   "dependencies": {
     "asar": "latest",
