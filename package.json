@@ -7,7 +7,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "documentation": "jsdoc -d ./jsdoc  -r ./src",
-    "external-build":"git fetch && git pull && npm run make"
+    "external-build":"git reset --hard && git fetch && git pull && npm run make"
   },
   "dependencies": {
     "asar": "latest",
