@@ -14,6 +14,8 @@ const themeManager = new ThemeManagerBuilder(JSON.parse(localStorage.getItem('th
 const fonts = new SystemFontManager().getFontsSync();
 var fragment = document.createDocumentFragment();
 var ipcRendererBinder = new Binder(ipcRenderer, {
+const fragment = document.createDocumentFragment();
+const ipcRendererBinder = new Binder(ipcRenderer, {
     'receive-selected-image': (event, data) => {
         //We need to make sure that image path does not contain
         //spaces .Spaces in file path do break css code
@@ -52,6 +54,8 @@ $(document).ready(function() {
     themeManager.applySelectedTheme();
     var fontList = document.getElementById('font-list');
     var cellFontSizeSlider = document.getElementById('cell-font-size');
+    const fontList = document.getElementById('font-list');
+    const cellFontSizeSlider = document.getElementById('cell-font-size');
     //Check if there are any user preferences to load
     let userPrefs = JSON.parse(localStorage.getItem('ui-preferences'));
     //First create the select box
