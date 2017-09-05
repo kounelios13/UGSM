@@ -51,8 +51,8 @@ function createWindows() {
     win = new BrowserWindow({
         height: 800,
         width: 1200,
-        title: "UGSM v1.0.4",
-        icon: path.join(__dirname,'./icons/ugsm256x256')
+        title: "UGSM v1.0.5",
+        icon: path.join(__dirname,'./icons/ugsmv2.png')
     });
     win.loadURL(url.format({
         /*pathname: path.join(__dirname, './services.html'),*/

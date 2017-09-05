@@ -14,7 +14,7 @@ let trayIcon = null;
 *@param {BrowserWindow} settingsWindow The window that we will use to change our application settings
 */
 function createTray(mainWindow,settingsWindow) {
-    trayIcon = new Tray(join(__dirname, '../../../icons/ugsm256x256.png'));
+    trayIcon = new Tray(join(__dirname, '../../../icons/ugsmv2.png'));
     const template =  [{
         label: 'UI settings',
         click: () => {
