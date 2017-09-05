@@ -12,8 +12,6 @@ const SystemFontManager = require('system-font-families').default;
 const ThemeManagerBuilder = require('../javascript/classes/themeManager.js');
 const themeManager = new ThemeManagerBuilder(JSON.parse(localStorage.getItem('theme-manager-files')));
 const fonts = new SystemFontManager().getFontsSync();
-var fragment = document.createDocumentFragment();
-var ipcRendererBinder = new Binder(ipcRenderer, {
 const fragment = document.createDocumentFragment();
 const ipcRendererBinder = new Binder(ipcRenderer, {
     'receive-selected-image': (event, data) => {
@@ -52,8 +50,6 @@ const ipcRendererBinder = new Binder(ipcRenderer, {
 });
 $(document).ready(function() {
     themeManager.applySelectedTheme();
-    var fontList = document.getElementById('font-list');
-    var cellFontSizeSlider = document.getElementById('cell-font-size');
     const fontList = document.getElementById('font-list');
     const cellFontSizeSlider = document.getElementById('cell-font-size');
     //Check if there are any user preferences to load
