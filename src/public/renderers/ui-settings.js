@@ -9,7 +9,7 @@ const {
 } = require('../javascript/custom_modules/utils.js');
 const Binder = require('../javascript/classes/binder.js');
 const SystemFontManager = require('system-font-families').default;
-const ThemeManagerBuilder = require('../javascript/classes/themeManager.js');
+const ThemeManagerBuilder = require('../javascript/classes/theme-manager.js');
 const themeManager = new ThemeManagerBuilder(JSON.parse(localStorage.getItem('theme-manager-files')));
 const fonts = new SystemFontManager().getFontsSync();
 const fragment = document.createDocumentFragment();
