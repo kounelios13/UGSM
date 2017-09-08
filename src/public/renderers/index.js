@@ -285,13 +285,14 @@ function showAvailableThemes() {
 }
 /** @namespace */
 $(document).ready(function() {
-    themeManager.applySelectedTheme();
     if (localStorage.getItem("ui-preferences")) {
         let cssData = JSON.parse(localStorage.getItem("ui-preferences"));
         let cellFontSize = cssData['table-cell-size'];
         $("body").css(cssData);
         $("table").css("font-size", `${cellFontSize}px`);
     }
+    //Make sure to apply themes after user settings
+    themeManager.applySelectedTheme();
     //Loaded all css now show the window
     ipcRenderer.send('show-application');
     info('Please wait while loading system services');
