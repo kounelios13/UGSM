@@ -9,11 +9,11 @@ class ThemeManager {
     *@param {Object}options An object containing some UGSM theme paths and a selected theme
     */
     constructor(options) {
-        this.themes = [];
-        this.selectedTheme = null;
+        this._themes = [];
+        this._selectedTheme = null;
         if (options) {
-            this.themes = options.themes;
-            this.selectedTheme = options.selectedTheme;
+            this._themes = options.themes;
+            this._selectedTheme = options.selectedTheme;
         }
     }
     /**
@@ -22,8 +22,8 @@ class ThemeManager {
     */
     addTheme(theme) {
         //Make sure we don't add a theme we already have
-        if (this.themes.indexOf(theme) === -1) {
-            this.themes.push(theme);
+        if (this._themes.indexOf(theme) === -1) {
+            this._themes.push(theme);
         }
     }
     /**
@@ -31,13 +31,13 @@ class ThemeManager {
     *@param {String} theme The theme we want to remove
     */
     removeTheme(theme) {
-        let indexToRemove = this.themes.indexOf(theme);
-        this.themes[indexToRemove] = null;
+        let indexToRemove = this._themes.indexOf(theme);
+        this._themes[indexToRemove] = null;
         //Now we need to remove null valus from our themes array
-        this.themes = this.themes.filter(e => e != null);
+        this._themes = this._themes.filter(e => e != null);
         //Check if the theme we removed was the selectedTheme
-        if (this.selectedTheme == theme) {
-            this.selectedTheme = null;
+        if (this._selectedTheme == theme) {
+            this._selectedTheme = null;
         }
         //This is the only case we force saveThemes()
         //The reason is the following
@@ -47,25 +47,25 @@ class ThemeManager {
         this.saveThemes();
     }
     /** Get all themes
-    *@returns {Array}this.themes A list of all themes saved in the current ThemeManager instance
+    *@returns {Array}this._themes A list of all themes saved in the current ThemeManager instance
     */ 
     getThemes() {
-        return this.themes;
+        return this._themes;
     }
     /**
     * Set the selected theme for the current ThemeManager instance
     * @param {String} theme The theme to set as selected
     */
     setSelectedTheme(theme) {
-        this.selectedTheme = theme;
-        this.saveThemes();
+        this._selectedTheme = theme;
+        this._saveThemes();
     }
     /**
     * Get the selected theme for the current ThemeManager instance
-    * @returns {String} this.selectedTheme The selected theme
+    * @returns {String} this._selectedTheme The selected theme
     */
     getSelectedTheme() {
-        return this.selectedTheme;
+        return this._selectedTheme;
     }
 
     /**
@@ -73,7 +73,7 @@ class ThemeManager {
     *  @returns {Number} selectedIndex the index of the selectd theme
     */
     getSelectedThemeIndex() {
-        let selectedIndex = this.themes.indexOf(this.selectedTheme);
+        let selectedIndex = this._themes.indexOf(this._selectedTheme);
         return selectedIndex;
     }
     /**
@@ -81,8 +81,8 @@ class ThemeManager {
     */
     saveThemes() {
         let info = {
-            themes: this.themes,
-            selectedTheme: this.selectedTheme
+            themes: this._themes,
+            selectedTheme: this._selectedTheme
         };
         localStorage.setItem('theme-manager-files', JSON.stringify(info));
     }
@@ -90,8 +90,8 @@ class ThemeManager {
     * Clears the localStorage and the app from all UGSM theme settings
     */
     clear() {
-        this.themes = [];
-        this.setSelectedTheme = null;
+        this._themes = [];
+        this._setSelectedTheme = null;
         localStorage.removeItem('theme-manager-files');
     }
 
@@ -99,7 +99,7 @@ class ThemeManager {
     * Applies the selected theme(if any) to the current UGSM instance
     */
     applySelectedTheme() {
-        if (this.getSelectedTheme()) {
+        if (this._getSelectedTheme()) {
             //Find if we have created a link tag before so we can change its href attribute
             let styleTag  = document.getElementById('external-theme');
             if(!styleTag){
@@ -112,7 +112,7 @@ class ThemeManager {
             //The reason is that because the app is compiled any reference to an external file
             //will throw an error for the file not being precompiled
             //https://github.com/electron/electron-compile/issues/171
-            const themeContents = fs.readFileSync(this.getSelectedTheme(),'utf-8');
+            const themeContents = fs.readFileSync(this._getSelectedTheme(),'utf-8');
             if(themeContents){
                 styleTag.innerHTML = themeContents;
             }
