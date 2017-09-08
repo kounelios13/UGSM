@@ -99,7 +99,7 @@ class ThemeManager {
     * Applies the selected theme(if any) to the current UGSM instance
     */
     applySelectedTheme() {
-        if (this._getSelectedTheme()) {
+        if (this.getSelectedTheme()) {
             //Find if we have created a link tag before so we can change its href attribute
             let styleTag  = document.getElementById('external-theme');
             if(!styleTag){
@@ -112,7 +112,7 @@ class ThemeManager {
             //The reason is that because the app is compiled any reference to an external file
             //will throw an error for the file not being precompiled
             //https://github.com/electron/electron-compile/issues/171
-            const themeContents = fs.readFileSync(this._getSelectedTheme(),'utf-8');
+            const themeContents = fs.readFileSync(this.getSelectedTheme(),'utf-8');
             if(themeContents){
                 styleTag.innerHTML = themeContents;
             }
