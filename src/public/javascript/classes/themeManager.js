@@ -1,3 +1,4 @@
+const fs = require('fs');
 /**
  * @class
  * A class used to keep UGSM themes(mostly css file paths)
@@ -98,17 +99,25 @@ class ThemeManager {
     * Applies the selected theme(if any) to the current UGSM instance
     */
     applySelectedTheme() {
-        if (this.selectedTheme) {
+        if (this.getSelectedTheme()) {
             //Find if we have created a link tag before so we can change its href attribute
-            if (document.getElementById('external-theme')) {
-                document.getElementById('external-theme').href = this.selectedTheme;
-            } else {
-                let link = document.createElement('link');
-                link.id = 'external-theme';
-                link.rel = 'stylesheet';
-                link.href = this.selectedTheme;
-                document.head.appendChild(link);
+            let styleTag  = document.getElementById('external-theme');
+            if(!styleTag){
+                styleTag = document.createElement('style');
+                styleTag.id = 'external-theme'; 
+                document.head.appendChild(styleTag);
             }
+            //When applying a new theme we have to read its contents 
+            //and the apply them to a new style tag.
+            //The reason is that because the app is compiled any reference to an external file
+            //will throw an error for the file not being precompiled
+            //https://github.com/electron/electron-compile/issues/171
+            fs.readFile(this.getSelectedTheme(),'utf-8',(err,data)=>{
+                if(err){
+                    throw err;
+                }
+                styleTag.innerHTML = data;
+            });
         }
     }
 }
