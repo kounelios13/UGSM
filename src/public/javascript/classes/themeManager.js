@@ -112,12 +112,10 @@ class ThemeManager {
             //The reason is that because the app is compiled any reference to an external file
             //will throw an error for the file not being precompiled
             //https://github.com/electron/electron-compile/issues/171
-            fs.readFile(this.getSelectedTheme(),'utf-8',(err,data)=>{
-                if(err){
-                    throw err;
-                }
-                styleTag.innerHTML = data;
-            });
+            const themeContents = fs.readFileSync(this.getSelectedTheme(),'utf-8');
+            if(themeContents){
+                styleTag.innerHTML = themeContents;
+            }
         }
     }
 }
