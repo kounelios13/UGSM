@@ -78,7 +78,7 @@ let rgb2hex = color => {
         console.warn(`Be careful.You got the default color because no argument was passed`);
         return `#000000`;
     }
-    var rgbValues = color.split("(")[1].split(")")[0].split(",");
+    const rgbValues = color.split("(")[1].split(")")[0].split(",");
     hexColor = `#` + rgbValues.map(col => {
         //Covnvert each rgb value to hex format
         //E.g. 255 --> ff
