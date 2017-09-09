@@ -5,3 +5,7 @@ out/
 *.kra
 
 *.kra~
+
+\.eslintrc\.js
+
+src/icons/ugsmv3\.png
