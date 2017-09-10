@@ -51,13 +51,15 @@ function createWindows() {
         height: 800,
         width: 1200,
         title: "UGSM v1.0.5",
-        icon: path.join(__dirname,'./icons/ugsmv2.png')
+        icon: path.join(__dirname,'./icons/ugsmv2.png'),
+        show:false,
+        backgroundColor:'rgba(190,70,9,.8)'
     });
     win.loadURL(url.format({
-        /*pathname: path.join(__dirname, './services.html'),*/
         pathname: path.join(__dirname, './public/views/index.jade'),
         protocol: 'file:',
-        slashes: true
+        slashes: true,
+
     }));
     //Prevent user from exiting UGSM
     //without confirming
@@ -77,7 +79,7 @@ function createWindows() {
         width: 1200,
         title: "UI settings",
         show: false,
-        parent:win
+        parent:win,
     });
     uiPreferencesWin.loadURL(url.format({
         pathname: path.join(__dirname, './public/views/ui-settings.jade'),
@@ -92,7 +94,10 @@ function createWindows() {
 }
 
 const appBinder = new Binder(app, {
-    ready: createWindows,
+    'ready': createWindows,
+    'ready-to-show':()=>{
+        win.show();
+    },
     'window-all-closed': () => {
         // On macOS it is common for applications and their menu bar
         // to stay active until the user quits explicitly with Cmd + Q
