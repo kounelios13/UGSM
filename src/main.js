@@ -9,7 +9,7 @@ const {
     Tray
 } = require('electron');
 const fs = require('fs');
-const exec = require('child_process').exec;
+const {exec} = require('child_process');
 const url = require('url');
 const path = require('path');
 const Binder = require('./public/javascript/classes/binder.js');
@@ -21,8 +21,7 @@ const {createMenuBar} = require('./public/javascript/custom_modules/menubar.js')
 let production = true;
 let win = null;
 let uiPreferencesWin = null;
-var allowAppTermination = false;
-let trayIcon = null;
+let allowAppTermination = false;
 
 /**
 * Hide a window instead of destroying it when a user closes it
@@ -171,7 +170,7 @@ ipcMainBinder.addEvents({
                 fs.writeFile(fileName, settings, (error) => {
                     //Since this code executes as root the file being created is read only.
                     //chmod() it
-                    let exportStatus = {
+                    const exportStatus = {
                         fileExported:error==undefined,
                         permissionsChanged:false,
                         //In case of error 

@@ -1,9 +1,10 @@
+console.log(__dirname);
 const {
     success,
     error,
     info
-    //Path must be relative to renderers folder
 } = require('../javascript/custom_modules/utils.js');
+
 const {
     ipcRenderer
 } = require('electron');

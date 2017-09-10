@@ -6,6 +6,7 @@ const {
     warning,
     error,
     rgb2hex
+    //Path must be relative to views folder
 } = require('../javascript/custom_modules/utils.js');
 const Binder = require('../javascript/classes/binder.js');
 const SystemFontManager = require('system-font-families').default;
