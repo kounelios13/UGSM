@@ -56,7 +56,7 @@ function createWindows() {
     win = new BrowserWindow({
         height: 800,
         width: 1200,
-        title: "UGSM v1.0.5",
+        title: "UGSM v1.0.6",
         icon: path.join(__dirname, './icons/ugsmv2.png'),
         show: false,
         backgroundColor: 'rgba(190,70,9,.8)'
