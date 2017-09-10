@@ -2,7 +2,7 @@ const {
     exec
 } = require('child_process');
 const sudoExec = require('sudo-prompt').exec;
-const Binder = require('./binder.js');
+
 /**
 *A class used for stoping ,starting and restarting Ubuntu services
 */

@@ -1,4 +1,3 @@
-console.log(__dirname);
 const {
     success,
     error,
@@ -9,26 +8,25 @@ const {
     ipcRenderer
 } = require('electron');
 const EventEmmiter = require('events');
-const Binder = require('../javascript/classes/binder.js');
 const ServiceManagerBuilder = require('../javascript/classes/service-manager.js');
 const IllegalArgumentError = require('../javascript/classes/illegalArgumentError.js');
 const ThemeManagerBuilder = require('../javascript/classes/theme-manager.js');
 const themeManager = new ThemeManagerBuilder(JSON.parse(localStorage.getItem('theme-manager-files')));
-var serviceEmmiter = new EventEmmiter();
-var serviceManager = new ServiceManagerBuilder(serviceEmmiter);
-var services = [];
+const serviceEmmiter = new EventEmmiter();
+const serviceManager = new ServiceManagerBuilder(serviceEmmiter);
+let services = [];
 /**Utility function that will help us
 create the 3 types of links we need for our service list(Start, Stop,Restart) 
 *@param {String} type Type of link to create(start,stop,restart)
 *@param {String} name name of service (.e.g apache2 ,mysql etc.)
 *@returns {String} serviceLink the link we created
 */
-var createServiceLink = (type, name) => {
-    let allowedTypes = ['start', 'stop', 'restart'];
+const createServiceLink = (type, name) => {
+    const allowedTypes = ['start', 'stop', 'restart'];
     if (allowedTypes.indexOf(type) == -1) {
         throw new IllegalArgumentError('Service link type must be one of the following:start,stop,restart');
     }
-    let serviceLink = document.createElement('a');
+    const serviceLink = document.createElement('a');
     serviceLink.href = `javascript:${type}Service('${name}')`; //e.g. type start -> javascript:startService()
     serviceLink.innerText = `${type[0].toUpperCase()+type.slice(1)} Service` //Return first char of string capitalized and then return  the
         //rest of the string without the first char
@@ -36,14 +34,14 @@ var createServiceLink = (type, name) => {
     return serviceLink;
 };
 /** Utility function that takes a list of services and creates a table with info from each service
-*@param {Array}data an array of service objects
-*/
-var createServiceListTable = (data) => {
+ *@param {Array}data an array of service objects
+ */
+const createServiceListTable = (data) => {
     if (!data.length) {
         error('Something happened.No data received.Probably unsupported platform');
         return;
     }
-    var fragment = document.createDocumentFragment();
+    const fragment = document.createDocumentFragment();
     for (let i = 0, max = data.length; i < max; i++) {
         let row = document.createElement("tr");
         row.id = data[i].name;
@@ -80,91 +78,95 @@ serviceEmmiter.on('receive-services', (data) => {
     //Hide only the startup dialog modal
     $('.dialog-info:not(.theme-selection-modal)').modal('hide');
 });
-var serviceEmmiterBinder = new Binder(serviceEmmiter, {
-    'service-stop-status': (data) => {
-        if (data.status == 'success') {
-            success('Service has been stopped');
-            updateServiceStatus(data.name, 'inactive');
-        } else {
-            error(data.err);
-        }
-    },
-    'service-activate-status': (data) => {
-        if (data.status == "success") {
-            console.log(data)
-            success('Service has been started');
-            updateServiceStatus(data.name, "active");
-        } else {
-            error(data.err);
-        }
-    },
-    'service-restart-status': (data) => {
-        if (data.status == "success") {
-            success('Service has been restarted');
-            updateServiceStatus(data.name, 'active');
-        } else {
-            error(data.err);
-        }
+
+serviceEmmiter.on('service-stop-status', (data) => {
+    if (data.status == 'success') {
+        success('Service has been stopped');
+        updateServiceStatus(data.name, 'inactive');
+    } else {
+        error(data.err);
     }
 });
-var ipcRendererBinder = new Binder(ipcRenderer, {
-    'filter-services': (event, data) => {
-        if (!services.length) {
-            return;
-        }
-        const activeServices = 0,
-            inactiveServices = 1,
-            allServices = 2;
-        let curServices = null;
-        switch (data.view) {
-            case activeServices:
-                curServices = serviceManager.getActiveServices();
-                break;
-            case inactiveServices:
-                curServices = serviceManager.getInactiveServices();
-                break;
-            case allServices:
-                curServices = serviceManager.getAllServices();
-                break;
-        }
-        createServiceListTable(curServices);
-    },
-    'request-exit-confirmation': () => {
-        confirm({
-            message: 'Are you sure you want to quit UGSM?',
-            callback: (answer) => {
-                ipcRenderer.send('exit-confirmation-answer', answer);
-            }
-        });
-    },
-    'apply-new-ui-settings': (event, data) => {
-        let tableCellFontSize = data['table-cell-size'];
-        $("body").css(data);
-        $("table").css("font-size", `${tableCellFontSize}px`);
 
-    },
-    'select-theme': () => {
-        showAvailableThemes();
-    },
-    'receive-selected-theme': (event, data) => {
-        let themes = document.getElementById('theme-select').childNodes;
-        //Check if theme exists by checking all available themes
-        //.every() checks all element inside an array(or an array like object) to see if they pass the function
-        //provided as callback.For our case if they don't it means that the theme already exists so we exit
-        if (![...themes].every(theme => theme.text != data)) {
-            return;
-        }
-        $('#theme-select').append(`<option>${data}</option>`);
-        //Now we need to save that theme into localStorage
-        themeManager.addTheme(data);
-        themeManager.saveThemes();
+serviceEmmiter.on('service-activate-status', (data) => {
+    if (data.status == "success") {
+        console.log(data)
+        success('Service has been started');
+        updateServiceStatus(data.name, "active");
+    } else {
+        error(data.err);
     }
+});
+
+serviceEmmiter.on('service-restart-status', (data) => {
+    if (data.status == "success") {
+        success('Service has been restarted');
+        updateServiceStatus(data.name, 'active');
+    } else {
+        error(data.err);
+    }
+});
+
+ipcRenderer.on('filter-services', (event, data) => {
+    if (!services.length) {
+        return;
+    }
+    const activeServices = 0,
+        inactiveServices = 1,
+        allServices = 2;
+    let curServices = null;
+    switch (data.view) {
+        case activeServices:
+            curServices = serviceManager.getActiveServices();
+            break;
+        case inactiveServices:
+            curServices = serviceManager.getInactiveServices();
+            break;
+        case allServices:
+            curServices = serviceManager.getAllServices();
+            break;
+    }
+    createServiceListTable(curServices);
+});
+
+ipcRenderer.on('request-exit-confirmation', () => {
+    confirm({
+        message: 'Are you sure you want to quit UGSM?',
+        callback: (answer) => {
+            ipcRenderer.send('exit-confirmation-answer', answer);
+        }
+    });
+});
+
+ipcRenderer.on('apply-new-ui-settings', (event, data) => {
+    let tableCellFontSize = data['table-cell-size'];
+    $("body").css(data);
+    $("table").css("font-size", `${tableCellFontSize}px`);
+
+});
+
+ipcRenderer.on('select-theme', () => {
+    showAvailableThemes();
+});
+
+ipcRenderer.on('receive-selected-theme', (event, data) => {
+    let themes = document.getElementById('theme-select').childNodes;
+    //Check if theme exists by checking all available themes
+    //.every() checks all element inside an array(or an array like object) to see if they pass the function
+    //provided as callback.For our case if they don't it means that the theme already exists so we exit
+    if (![...themes].every(theme => theme.text != data)) {
+        return;
+    }
+    $('#theme-select').append(`<option>${data}</option>`);
+    //Now we need to save that theme into localStorage
+    themeManager.addTheme(data);
+    themeManager.saveThemes();
 });
 /** Utility function that finds a service by its name and updates its status
-*@param {String} serviceName name of service to look for
-*@param {String} status The updated status of the service
-*/
-var updateServiceStatus = (serviceName, status) => {
+ *@param {String} serviceName name of service to look for
+ *@param {String} status The updated status of the service
+ */
+const updateServiceStatus = (serviceName, status) => {
     //.filter() returns an array
     //So first item in the array [0] will be our service object
     let service = services.filter(s => s.name == serviceName)[0];
@@ -202,14 +204,14 @@ function restartService(service) {
     serviceManager.restartService(service);
 }
 /**
-*Let the user choose a css file to use 
-*This way a user can create its own theme
-*/
+ *Let the user choose a css file to use 
+ *This way a user can create its own theme
+ */
 function showAvailableThemes() {
     /**
-    *If theme-selection modal is open
-    *we don't want to show it again
-    */
+     *If theme-selection modal is open
+     *we don't want to show it again
+     */
     if ($(".theme-selection-modal").is(":visible")) {
         console.log('Theme selection modal is already open');
         return;
@@ -312,7 +314,7 @@ $(document).ready(function() {
                 const activeServices = 0,
                     inactiveServices = 1,
                     allServices = 2;
-                var selectedIndex = $("#filter-select").prop("selectedIndex");
+                const selectedIndex = $("#filter-select").prop("selectedIndex");
                 //Check if service list is not empty
                 if (services.length) {
                     let curServices = null;
