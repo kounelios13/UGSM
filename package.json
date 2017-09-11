@@ -18,8 +18,9 @@
     "sudo-prompt": "^7.1.1",
     "system-font-families": "latest"
   },
-  "description": "While searching a GUI service manager for Ubuntu 17.04 I realized that there isn't anything out there. That's why I will try to make one using Electron",
+  "description": "A simple GUI service manager written in JavaScript",
   "keywords": [
+    "electron",
     "gui",
     "services",
     "ubuntu",
