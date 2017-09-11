@@ -7,9 +7,10 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "documentation": "jsdoc -d ./jsdoc  -r ./src",
-    "external-build":"git reset --hard && git fetch && git pull && electron-forge make --arch=x64"
+    "external-build": "git reset --hard && git fetch && git pull && electron-forge make --arch=x64"
   },
   "dependencies": {
+    "npm": "^5.4.1",
     "asar": "latest",
     "dotenv": "latest",
     "electron-compile": "^6.4.1",
@@ -56,7 +57,7 @@
         ]
       },
       "electronPackagerConfig": {
-        "asar":true
+        "asar": true
       },
       "electronWinstallerConfig": {
         "name": ""

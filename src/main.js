@@ -64,8 +64,7 @@ function createWindows() {
     win.loadURL(url.format({
         pathname: path.join(__dirname, './public/views/index.jade'),
         protocol: 'file:',
-        slashes: true,
-
+        slashes: true
     }));
     //Prevent user from exiting UGSM
     //without confirming
