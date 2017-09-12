@@ -2,6 +2,7 @@ const {
     success,
     error,
     info
+    confirm
 } = require('../javascript/custom_modules/utils.js');
 
 const {
