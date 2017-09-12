@@ -62,21 +62,14 @@ let confirm = options => {
     bootbox.confirm(options);
 };
 /**
-*Replace native confirm with the bootbox one
-*/
-window.confirm = confirm;
-/**
 * Convert an rgb color to hex format
 *@param {String}color The rgb color
 *@returns {String}hexColor The rgb color in hex format
 */
-let rgb2hex = color => {
+const rgb2hex = color => {
     let hexColor = null;
-    if(!color){
-        //In case user pass no color
-        //return black color
-        console.warn(`Be careful.You got the default color because no argument was passed`);
-        return `#000000`;
+    if(color === undefined || color === null || !color.includes('rgb(')){
+        throw new Error('Please pass a valid rgb color');
     }
     const rgbValues = color.split("(")[1].split(")")[0].split(",");
     hexColor = `#` + rgbValues.map(col => {
