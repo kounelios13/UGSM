@@ -1,13 +1,16 @@
 const {
     success,
     error,
-    info
+    info,
     confirm
 } = require('../javascript/custom_modules/utils.js');
-
 const {
     ipcRenderer
 } = require('electron');
+
+const {
+    Search
+} = require('../javascript/classes/search.js');
 const EventEmmiter = require('events');
 const ServiceManagerBuilder = require('../javascript/classes/service-manager.js');
 const IllegalArgumentError = require('../javascript/classes/illegalArgumentError.js');
@@ -16,6 +19,7 @@ const themeManager = new ThemeManagerBuilder(JSON.parse(localStorage.getItem('th
 const serviceEmmiter = new EventEmmiter();
 const serviceManager = new ServiceManagerBuilder(serviceEmmiter);
 let services = [];
+const serviceSearch = new Search();
 /**Utility function that will help us
 create the 3 types of links we need for our service list(Start, Stop,Restart) 
 *@param {String} type Type of link to create(start,stop,restart)
@@ -35,11 +39,11 @@ const createServiceLink = (type, name) => {
     return serviceLink;
 };
 /** Utility function that takes a list of services and creates a table with info from each service
- *@param {Array}data an array of service objects
+ *@param {Object[]}data an array of service objects
  */
 const createServiceListTable = (data) => {
     if (!data.length) {
-        error('Something happened.No data received.Probably unsupported platform');
+        error('Something happened.No data received');
         return;
     }
     const fragment = document.createDocumentFragment();
@@ -76,6 +80,7 @@ const createServiceListTable = (data) => {
 serviceEmmiter.on('receive-services', (data) => {
     services = data;
     createServiceListTable(services);
+    serviceSearch.setDB(data);
     //Hide only the startup dialog modal
     $('.dialog-info:not(.theme-selection-modal)').modal('hide');
 });
@@ -332,6 +337,21 @@ $(document).ready(function() {
                 }
             }
         });
+    });
+    $("#search").on('keyup',function(){
+        let text = $(this).val().trim();
+        if(text.length < 1){
+            //Make sure that if the search input is empty all services will be shown
+            createServiceListTable(services);
+            return;
+        }
+        let results = serviceSearch.getMatches(text);
+        if(results.length < 1){
+            bootbox.hideAll();
+            error('No matches found');
+            return;
+        }
+        createServiceListTable(results);
     });
     $("body").on('hide.bs.modal', '.theme-selection-modal', function() {
         //If theme-selection-modal is closed via the `x` button the event will fire twice

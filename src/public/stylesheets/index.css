@@ -18,6 +18,11 @@ td a:nth-child(1) {
 td{ 
     text-align:center;
 }
+
+#search{
+    margin-bottom:2vh;
+}
 .page-header{
     color:brown;
 }
+
