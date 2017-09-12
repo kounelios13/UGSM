@@ -76,7 +76,7 @@ class ServiceManager {
     }
     /**
     * Get all active services
-    * @returns {Array} activeServices An array containing the active services
+    * @returns {Object[]} activeServices An array containing the active services
     */
     getActiveServices() {
         let activeServices = this._services.filter(s => s.status == "active");
@@ -84,12 +84,16 @@ class ServiceManager {
     }
     /**
     * Get all inactive services
-    * @returns {Array} inactiveServices An array containing all inactive services
+    * @returns {Object[]} inactiveServices An array containing all inactive services
     */
     getInactiveServices() {
         let inactiveServices = this._services.filter(s => s.status == "inactive");
-        return inactiveServices
+        return inactiveServices;
     }
+    /**
+    * Get all services
+    * @returns {Object[]} this._services An array containing all the services found
+    */
     getAllServices() {
         return this._services;
     }
