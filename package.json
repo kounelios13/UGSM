@@ -6,7 +6,7 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "documentation": "jsdoc -d ./jsdoc  -r ./src",
+    "documentation": "rm -rf jsdoc && jsdoc -c conf.json",
     "external-build": "git reset --hard && git fetch && git pull && electron-forge make --arch=x64",
     "test":"mocha"
   },
