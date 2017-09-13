@@ -1,4 +1,4 @@
-# Ubuntu Graphical Service Manager (U.G.S.M.) v1.0.5
+# Ubuntu Graphical Service Manager (U.G.S.M.) v1.0.6
 Ubuntu Graphical Service Manager is an electron app
 that helps me manage my active services in Ubuntu 17.04 and 16.04
 Simple and clear code
@@ -10,7 +10,8 @@ How to run:
 * Install dependencies
 
 **In order for this app to work make sure that `electon` is installed using globally by using `npm install -g electron`**
-<code>git clone https://github.com/kounelios13/UGSM.git && cd ubuntu-graphical-service-manager && npm install</code>
+
+<code>git clone https://github.com/kounelios13/UGSM.git && cd UGSM && npm install</code>
 
 To start `UGSM`:
 * cd into UGSM directory
