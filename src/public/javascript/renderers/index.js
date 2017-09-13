@@ -1,3 +1,6 @@
+/**
+*@file This file is the main renderer used by the index view page
+*/
 const {
     success,
     error,
@@ -16,12 +19,14 @@ const ServiceManagerBuilder = require('../javascript/classes/service-manager.js'
 const IllegalArgumentError = require('../javascript/classes/illegalArgumentError.js');
 const ThemeManagerBuilder = require('../javascript/classes/theme-manager.js');
 const themeManager = new ThemeManagerBuilder(JSON.parse(localStorage.getItem('theme-manager-files')));
+/** @namespace */
 const serviceEmmiter = new EventEmmiter();
 const serviceManager = new ServiceManagerBuilder(serviceEmmiter);
 let services = [];
 const serviceSearch = new Search();
-/**Utility function that will help us
-create the 3 types of links we need for our service list(Start, Stop,Restart) 
+/**
+*@memberof! index
+*Utility function that will help us create the 3 types of links we need for our service list(Start, Stop,Restart) 
 *@param {String} type Type of link to create(start,stop,restart)
 *@param {String} name name of service (.e.g apache2 ,mysql etc.)
 *@returns {String} serviceLink the link we created
@@ -77,6 +82,8 @@ const createServiceListTable = (data) => {
     document.querySelector("tbody").innerHTML = "";
     document.querySelector("tbody").appendChild(fragment);
 };
+
+
 serviceEmmiter.on('receive-services', (data) => {
     services = data;
     createServiceListTable(services);
@@ -294,14 +301,14 @@ function showAvailableThemes() {
 }
 /** @namespace */
 $(document).ready(function() {
+    //Make sure to apply themes before user settings
+    themeManager.applySelectedTheme();
     if (localStorage.getItem("ui-preferences")) {
         let cssData = JSON.parse(localStorage.getItem("ui-preferences"));
         let cellFontSize = cssData['table-cell-size'];
         $("body").css(cssData);
         $("table").css("font-size", `${cellFontSize}px`);
     }
-    //Make sure to apply themes after user settings
-    themeManager.applySelectedTheme();
     //Loaded all css now show the window
     ipcRenderer.send('show-application');
     info('Please wait while loading system services');
