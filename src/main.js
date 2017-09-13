@@ -1,6 +1,3 @@
-/**
- *@namespace main
- */
 const {
     app,
     BrowserWindow,
