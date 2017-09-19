@@ -20,8 +20,8 @@ describe('utils', function() {
                 rgb2hex();
             }, Error, 'Please pass a valid rgb color');
         });
-        it('should return #FFFFFF when the color passed is rgb(255,255,255)', function() {
-            assert.equal(rgb2hex('rgb(255,255,255)').toUpperCase(), '#FFFFFF');
+        it('should return #ffffff when the color passed is rgb(255,255,255)', function() {
+            assert.equal(rgb2hex('rgb(255,255,255)'), '#ffffff');
         });
     });
 });
