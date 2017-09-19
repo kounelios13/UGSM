@@ -299,7 +299,7 @@ function showAvailableThemes() {
         className: 'dialog-info theme-selection-modal'
     });
 }
-/** @namespace */
+
 $(document).ready(function() {
     //Make sure to apply themes before user settings
     themeManager.applySelectedTheme();
@@ -345,8 +345,8 @@ $(document).ready(function() {
             }
         });
     });
-    $("#search").on('keyup',function(){
-        let text = $(this).val().trim();
+    $("#search-btn").on('click',function(){
+        let text = $("#search").val().trim();
         if(text.length < 1){
             //Make sure that if the search input is empty all services will be shown
             createServiceListTable(services);

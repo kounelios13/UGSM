@@ -14,6 +14,11 @@ html
         script(src='../javascript/bootstrap.min.js')
         script(src='../javascript/bootbox.min.js')
         script(src='../javascript/renderers/index.js')
+        script.
+            if(window.module){
+                module = window.module;
+                window.module = undefined;
+            }
     body
         div.container-fluid
             div.page-header
@@ -21,7 +26,14 @@ html
             div.jumbotron
                 p Manage system services with ease
            
-            input#search.form-control(type='text',placeholder='Type a service name here to find it faster')
+
+            
+            .input-group
+                input#search.form-control(type='text',placeholder='Type a service name here to find it faster')
+                span.input-group-btn
+                    .btn.btn-info#search-btn Search
+                    
+                        
 
             table#service-table.table.table-bordered
                 thead
