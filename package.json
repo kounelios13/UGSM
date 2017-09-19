@@ -8,7 +8,7 @@
     "make": "electron-forge make",
     "documentation": "rm -rf jsdoc && jsdoc -c conf.json",
     "external-build": "git reset --hard && git fetch && git pull && electron-forge make --arch=x64",
-    "test":"mocha"
+    "test": "mocha"
   },
   "dependencies": {
     "npm": "^5.4.1",
@@ -43,7 +43,7 @@
     "babel-preset-react": "^6.24.1",
     "electron-forge": "^4.0.1",
     "electron-prebuilt-compile": "1.7.5",
-    "jsdoc": "^3.5.4",
+    "jsdoc": "^3.5.5",
     "mocha": "^3.5.3"
   },
   "config": {
