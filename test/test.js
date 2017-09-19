@@ -45,6 +45,11 @@ describe('Search', function() {
         }];
 
         const dbSearcher = new Search(db);
+        it('should throw an error when no term is given',function(){
+            assert.throws(function(){
+                dbSearcher.getMatches();
+            },Error,'Please provide a term to search for');
+        });
         it('should return an array with exactly 1 object when term is foo', function() {
             assert.equal(dbSearcher.getMatches('foo').length, 1);
         });
