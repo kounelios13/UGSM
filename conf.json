@@ -5,8 +5,7 @@
         "title":"UGSM code documentation",
         "recurse":true,
         "destination":"./jsdoc",
-        "readme":"./README.md",
-        "template":"jsdoc_templates/ugsm/"
+        "readme":"./README.md"
     },
     "source": {
         "include": ["src"],
