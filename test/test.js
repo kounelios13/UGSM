@@ -74,5 +74,9 @@ describe('Search', function() {
             
             assert.equal(resultsAreTheSame,true);
         });
+        it('should return an empty array when a Search instance has been initiated with an empty array or with the default array',function(){
+            const emptySearcher = new Search();
+            assert.equal(emptySearcher.getMatches('a').length,0);
+        });
     });
 });
