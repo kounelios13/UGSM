@@ -1,12 +1,16 @@
 /**
-* @module utils
-*/
+ * @module utils
+ */
 
+//@TODO
+//All functions related to Bootstrap should accept an option callback as 2nd argument 
 /** 
-* @memberof utils
-*Display message using an info bootstrap modal
-*@param {String} message The message to display
-*/
+ * @memberof utils
+ *Display message using an info bootstrap modal
+ *@example <caption> Displaya hello folks message </caption>
+ *info('Hello folks');
+ *@param {String} message The message to display
+ */
 let info = message => {
     bootbox.alert({
         title: 'Info',
@@ -16,9 +20,11 @@ let info = message => {
 };
 
 /** 
-* Dispay a message using a success bootstrap modal
-*@param {Sting} message The message to display
-*/
+ * Dispay a message using a success bootstrap modal
+ *@example <caption> Display 'Download completed' </caption>
+ *success('Download completed');
+ *@param {Sting} message The message to display
+ */
 
 let success = message => {
     bootbox.alert({
@@ -27,10 +33,14 @@ let success = message => {
         message
     });
 };
+
 /**
-* Display a message using warning bootstrap modal
-*@param {String} message The message to display
-*/
+ * Display a message using warning bootstrap modal
+ *@example <caption> Display `Your OS won't get any updates after 2020.`</caption>
+ *warning(`Your OS won't get any updates after 2020.`);
+ *@param {String} message The message to display
+ */
+
 let warning = message => {
     bootbox.alert({
         title: 'Warning',
@@ -38,10 +48,14 @@ let warning = message => {
         message
     });
 };
+
 /**
-* Display a message using error bootstrap modal
-*@param {String} message The message to display
-*/
+ * Display a message using error bootstrap modal
+ *@example <caption>Display 'Failed to update your system'</caption>
+ *error('Failed to update your system');
+ *@param {String} message The message to display
+ */
+
 let error = message => {
     bootbox.alert({
         title: 'Error',
@@ -49,11 +63,26 @@ let error = message => {
         message
     });
 };
+
 /**
-* Display a confirmation dialog 
-* @param {Object} options An object containing the the title of the dialog
-* the message of the dialog and a callback to execute after the dialog is closed
-*/
+ * Display a confirmation dialog 
+ * @example <caption> Simple exit confirmation dialog</caption>
+ * confirm({
+ *   title: 'Warning',
+ *    message: 'Are you sure you want to exit?',
+ *    callback: (answer) => { *
+ *        if (answer) { 
+ *           //Handle exit
+ *            
+ *        } else {
+ *           //Handle rejection
+ *        } 
+ *    }
+ *});
+ * @param {Object} options An object containing the the title of the dialog
+ * the message of the dialog and a callback to execute after the dialog is closed
+ */
+
 let confirm = options => {
     options = Object.assign({}, {
         title: 'Confirm',
@@ -61,14 +90,19 @@ let confirm = options => {
     }, options);
     bootbox.confirm(options);
 };
+
 /**
-* Convert an rgb color to hex format
-*@param {String}color The rgb color
-*@returns {String}hexColor The rgb color in hex format
-*/
+ * Convert an rgb color to hex format
+ * @example <caption> Convert rgb(255,255,255)> to hex </caption>
+ * var hexColor = rgb2hex('rgb(255,255,255)'); 
+ * console.log(hexColor); //Logs '#ffffff'
+ *@param {String}color The rgb color
+ *@returns {String}hexColor The rgb color in hex format
+ */
+
 const rgb2hex = color => {
     let hexColor = null;
-    if(color === undefined || color === null || !color.includes('rgb(')){
+    if (color === undefined || color === null || !color.includes('rgb(')) {
         throw new Error('Please pass a valid rgb color');
     }
     const rgbValues = color.split("(")[1].split(")")[0].split(",");
