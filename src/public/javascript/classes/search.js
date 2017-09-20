@@ -1,7 +1,6 @@
 /**
- * @class
- * This class is used to save an array of objects so that you can search for objects in this array
- * using their name attribute
+ *@file This class is used to save an array of objects so that you can search for objects in this array using their name attribute
+ *@author Manos Kounelakis
  */
 class Search {
     /**

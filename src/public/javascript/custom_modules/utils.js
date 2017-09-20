@@ -1,4 +1,9 @@
 /**
+ * @file A set of ui and color utilities
+ * @author Manos Kounelakis
+ */
+ 
+/**
  * @module utils
  */
 
@@ -11,7 +16,7 @@
  *info('Hello folks');
  *@param {String} message The message to display
  */
-let info = message => {
+const info = message => {
     bootbox.alert({
         title: 'Info',
         className: 'dialog-info',
@@ -26,7 +31,7 @@ let info = message => {
  *@param {Sting} message The message to display
  */
 
-let success = message => {
+const success = message => {
     bootbox.alert({
         title: 'Success',
         className: 'dialog-success',
@@ -41,7 +46,7 @@ let success = message => {
  *@param {String} message The message to display
  */
 
-let warning = message => {
+const warning = message => {
     bootbox.alert({
         title: 'Warning',
         className: 'dialog-warning',
@@ -56,7 +61,7 @@ let warning = message => {
  *@param {String} message The message to display
  */
 
-let error = message => {
+const error = message => {
     bootbox.alert({
         title: 'Error',
         className: 'dialog-error',
@@ -83,7 +88,7 @@ let error = message => {
  * the message of the dialog and a callback to execute after the dialog is closed
  */
 
-let confirm = options => {
+const confirm = options => {
     options = Object.assign({}, {
         title: 'Confirm',
         className: 'dialog-warning'
