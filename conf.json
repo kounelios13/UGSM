@@ -1,6 +1,6 @@
 {
     "title":"UGSM code documentation",
-    "recurseDepth":5,
+    "recurseDepth":2,
     "opts":{
         "title":"UGSM code documentation",
         "recurse":true,
@@ -8,7 +8,7 @@
         "readme":"./README.md"
     },
     "source": {
-        "include": ["src"],
+        "include": ["src/public/javascript/classes","src/public/javascript/custom_modules"],
         "exclude": ["src/public/javascript/renderers","./src/main.js"],
         "includePattern": ".+\\.js(doc|x)?$",
         "excludePattern": "(^|\\/|\\\\)_"
