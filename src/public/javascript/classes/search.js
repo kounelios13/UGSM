@@ -26,8 +26,9 @@ class Search {
      * @param {Boolean} [ignoreCase] If true ignores cases when comparing names
      * @return {Object[]} matches The resuts of the search
      */
+
     getMatches(term, ignoreCase = false) {
-        if(arguments.length == 0){
+        if (arguments.length == 0 || !term) {
             throw new Error('Please provide a term to search for');
         }
         let matches = [];
