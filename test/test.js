@@ -20,6 +20,11 @@ describe('utils', function() {
                 rgb2hex();
             }, Error, 'Please pass a valid rgb color');
         });
+        it('should throw an error when called with an rgba color',function(){
+            assert.throws(function(){
+                rgb2hex('rgba(100,100,100,.8)');
+            },Error,'Please pass a valid rgb color');
+        });
         it('should return #ffffff when the color passed is rgb(255,255,255)', function() {
             assert.equal(rgb2hex('rgb(255,255,255)'), '#ffffff');
         });
@@ -48,6 +53,11 @@ describe('Search', function() {
         it('should throw an error when no term is given',function(){
             assert.throws(function(){
                 dbSearcher.getMatches();
+            },Error,'Please provide a term to search for');
+        });
+        it('should throw an error when term is null',function(){
+            assert.throws(function(){
+                dbSearcher.getMatches(null);
             },Error,'Please provide a term to search for');
         });
         it('should return an array with exactly 1 object when term is foo', function() {
