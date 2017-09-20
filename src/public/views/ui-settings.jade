@@ -22,6 +22,11 @@ html
         script(src='../javascript/bootstrap.min.js')
         script(src='../javascript/bootbox.min.js')
         script(src='../javascript/renderers/ui-settings.js')
+        script.
+            if(window.module){
+                module = window.module;
+                window.module = undefined;
+            }
     body
         div.container-fluid
             div.jumbotron
