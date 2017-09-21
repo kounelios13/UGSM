@@ -73,6 +73,13 @@ describe('utils', function() {
             },Error);
         });
     });
+    describe('#confirm()',function(){
+        it('should throw an Error when no callback is provided',function(){
+            assert.throws(function(){
+                confirm({title:"hey",message:"wanna go?"});
+            },Error);
+        });
+    });
 });
 describe('Search', function() {
     describe('#getMatches()', function() {
