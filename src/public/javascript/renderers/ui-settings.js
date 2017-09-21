@@ -5,6 +5,7 @@ const {
     success,
     warning,
     error,
+    confirm,
     rgb2hex
     //Path must be relative to views folder
 } = require('../javascript/custom_modules/utils.js');
@@ -80,8 +81,15 @@ $(document).ready(function() {
         $("body").css(userPrefs);
         $("table").css("font-size", `${tableCellSize}px`);
         //Use only hex colors
-        $("#text-color-selection").val(rgb2hex(textColor));
-        $("#bg-color-selection").val(rgb2hex(bgColor));
+        try {
+            $("#text-color-selection").val(rgb2hex(textColor));
+            $("#bg-color-selection").val(rgb2hex(bgColor));
+        } catch (e) {
+            if (e.message != 'Please pass a valid rgb color') {
+                throw e;
+            }
+        }
+
     }
     $("#select-bg-image").on("click", function() {
         ipcRenderer.send('show-open-dialog')
