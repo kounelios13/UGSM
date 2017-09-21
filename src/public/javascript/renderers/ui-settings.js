@@ -9,10 +9,10 @@ const {
     rgb2hex
     //Path must be relative to views folder
 } = require('../javascript/custom_modules/utils.js');
-
+const lockr = require('lockr');
 const SystemFontManager = require('system-font-families').default;
 const ThemeManagerBuilder = require('../javascript/classes/theme-manager.js');
-const themeManager = new ThemeManagerBuilder(JSON.parse(localStorage.getItem('theme-manager-files')));
+const themeManager = new ThemeManagerBuilder(lockr.get('theme-manager-files'));
 const fonts = new SystemFontManager().getFontsSync();
 const fragment = document.createDocumentFragment();
 
@@ -57,7 +57,7 @@ $(document).ready(function() {
     const fontList = document.getElementById('font-list');
     const cellFontSizeSlider = document.getElementById('cell-font-size');
     //Check if there are any user preferences to load
-    let userPrefs = JSON.parse(localStorage.getItem('ui-preferences'));
+    let userPrefs = lockr.get('ui-preferences');
     //First create the select box
     fonts.forEach(f => {
         let option = document.createElement('option');
@@ -121,7 +121,7 @@ $(document).ready(function() {
         };
         ipcRenderer.send('apply-ui-settings', cssData);
         //Let's save our css properties to localStorage
-        localStorage.setItem('ui-preferences', JSON.stringify(cssData));
+        lockr.set('ui-preferences', cssData);
         success('User preferences have been saved');
     });
     $("#delete-settings").on("click", function() {
@@ -129,12 +129,13 @@ $(document).ready(function() {
             message: 'Are you sure you want to clear your ui preferences?',
             callback: (answer) => {
                 if (answer) {
-                    localStorage.removeItem('ui-preferences');
+                    //rm stands for remove
+                    lockr.rm('ui-preferences');
                     confirm({
                         message: 'Do you want to reset UGSM to its default settings(Default theme and no custom configurations)?',
                         callback: (answer) => {
                             if (answer) {
-                                localStorage.removeItem('theme-manager-files');
+                                lockr.rm('theme-manager-files');
                                 success('UGSM reseted to default configuration.Please restart application');
                             } else {
                                 success('UI preferences cleared.Please restart application');
@@ -148,7 +149,7 @@ $(document).ready(function() {
     $("#save-as-theme").on("click", function() {
         //Time to convert our ui preferences into
         //a css string 
-        let prefs = JSON.parse(localStorage.getItem('ui-preferences'));
+        let prefs = lockr.get('ui-preferences');
         if (!prefs) {
             error("You don't have any saved settings saved");
             return;

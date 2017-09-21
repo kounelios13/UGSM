@@ -11,11 +11,12 @@
     "test": "mocha"
   },
   "dependencies": {
-    "npm": "^5.4.1",
     "asar": "latest",
     "dotenv": "latest",
     "electron-compile": "^6.4.1",
+    "lockr": "^0.8.4",
     "md5": "latest",
+    "npm": "^5.4.1",
     "sudo-prompt": "^7.1.1",
     "system-font-families": "latest"
   },

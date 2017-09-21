@@ -10,7 +10,7 @@ const {
 const {
     ipcRenderer
 } = require('electron');
-
+const lockr = require('lockr');
 const {
     Search
 } = require('../javascript/classes/search.js');
@@ -18,7 +18,7 @@ const EventEmmiter = require('events');
 const ServiceManagerBuilder = require('../javascript/classes/service-manager.js');
 const IllegalArgumentError = require('../javascript/classes/illegalArgumentError.js');
 const ThemeManagerBuilder = require('../javascript/classes/theme-manager.js');
-const themeManager = new ThemeManagerBuilder(JSON.parse(localStorage.getItem('theme-manager-files')));
+const themeManager = new ThemeManagerBuilder(lockr.get('theme-manager-files'));
 /** @namespace */
 const serviceEmmiter = new EventEmmiter();
 const serviceManager = new ServiceManagerBuilder(serviceEmmiter);
@@ -303,8 +303,8 @@ function showAvailableThemes() {
 $(document).ready(function() {
     //Make sure to apply themes before user settings
     themeManager.applySelectedTheme();
-    if (localStorage.getItem("ui-preferences")) {
-        let cssData = JSON.parse(localStorage.getItem("ui-preferences"));
+    if (lockr.get("ui-preferences")) {
+        let cssData = lockr.get("ui-preferences");
         let cellFontSize = cssData['table-cell-size'];
         $("body").css(cssData);
         $("table").css("font-size", `${cellFontSize}px`);
