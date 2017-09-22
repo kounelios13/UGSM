@@ -1,6 +1,6 @@
 /**
-*@file This file is the main renderer used by the index view page
-*/
+ *@file This file is the main renderer used by the index view page
+ */
 const {
     success,
     error,
@@ -24,19 +24,26 @@ const serviceEmmiter = new EventEmmiter();
 const serviceManager = new ServiceManagerBuilder(serviceEmmiter);
 let services = [];
 const serviceSearch = new Search();
+
+const {
+    createDocumentFragment,
+    getElementById,
+    querySelector,
+    createElement
+} = document;
 /**
-*@memberof! index
-*Utility function that will help us create the 3 types of links we need for our service list(Start, Stop,Restart) 
-*@param {String} type Type of link to create(start,stop,restart)
-*@param {String} name name of service (.e.g apache2 ,mysql etc.)
-*@returns {String} serviceLink the link we created
-*/
+ *@memberof! index
+ *Utility function that will help us create the 3 types of links we need for our service list(Start, Stop,Restart) 
+ *@param {String} type Type of link to create(start,stop,restart)
+ *@param {String} name name of service (.e.g apache2 ,mysql etc.)
+ *@returns {String} serviceLink the link we created
+ */
 const createServiceLink = (type, name) => {
     const allowedTypes = ['start', 'stop', 'restart'];
     if (allowedTypes.indexOf(type) == -1) {
         throw new IllegalArgumentError('Service link type must be one of the following:start,stop,restart');
     }
-    const serviceLink = document.createElement('a');
+    const serviceLink = createElement('a');
     serviceLink.href = `javascript:${type}Service('${name}')`; //e.g. type start -> javascript:startService()
     serviceLink.innerText = `${type[0].toUpperCase()+type.slice(1)} Service` //Return first char of string capitalized and then return  the
         //rest of the string without the first char
@@ -51,16 +58,16 @@ const createServiceListTable = (data) => {
         error('Something happened.No data received');
         return;
     }
-    const fragment = document.createDocumentFragment();
+    const fragment = createDocumentFragment();
     for (let i = 0, max = data.length; i < max; i++) {
-        let row = document.createElement("tr");
+        let row = createElement("tr");
         row.id = data[i].name;
-        let service = document.createElement("td");
+        let service = createElement("td");
         service.innerText = data[i].name;
-        let status = document.createElement("td");
+        let status = createElement("td");
         status.innerText = data[i].status;
-        let actionCell = document.createElement("td");
-        let actionLink = document.createElement("a");
+        let actionCell = createElement("td");
+        let actionLink = createElement("a");
         let startServiceLink = createServiceLink('start', data[i].name);
         let stopServiceLink = createServiceLink('stop', data[i].name);
         let restartServiceLink = createServiceLink('restart', data[i].name);
@@ -79,8 +86,8 @@ const createServiceListTable = (data) => {
         }
         fragment.appendChild(row);
     }
-    document.querySelector("tbody").innerHTML = "";
-    document.querySelector("tbody").appendChild(fragment);
+    querySelector("tbody").innerHTML = "";
+    querySelector("tbody").appendChild(fragment);
 };
 
 
@@ -163,7 +170,7 @@ ipcRenderer.on('select-theme', () => {
 });
 
 ipcRenderer.on('receive-selected-theme', (event, data) => {
-    let themes = document.getElementById('theme-select').childNodes;
+    let themes = getElementById('theme-select').childNodes;
     //Check if theme exists by checking all available themes
     //.every() checks all element inside an array(or an array like object) to see if they pass the function
     //provided as callback.For our case if they don't it means that the theme already exists so we exit
@@ -186,12 +193,12 @@ const updateServiceStatus = (serviceName, status) => {
     if (service) {
         service.status = status;
         //Now we also need to update the status cell in the table
-        let serviceRow = document.getElementById(serviceName);
+        let serviceRow = getElementById(serviceName);
         let rowChildren = serviceRow.children;
         rowChildren[1].innerText = status;
         //Now we need to check if the user sees all services or sees them filtered
         //If filtered we need to remove the affected row
-        let activeRows = document.querySelector("tbody").children;
+        let activeRows = querySelector("tbody").children;
         if (activeRows.length != services.length) {
             serviceRow.remove()
         }
@@ -254,7 +261,7 @@ function showAvailableThemes() {
                 label: 'Remove theme',
                 className: 'btn-danger',
                 callback: () => {
-                    let themeSelect = document.getElementById('theme-select');
+                    let themeSelect = getElementById('theme-select');
                     let themeIndex = themeSelect.selectedIndex;
                     let themeToRemove = themeSelect.value;
                     themeManager.removeTheme(themeToRemove);
@@ -345,15 +352,15 @@ $(document).ready(function() {
             }
         });
     });
-    $("#search-btn").on('click',function(){
+    $("#search-btn").on('click', function() {
         let text = $("#search").val().trim();
-        if(text.length < 1){
+        if (text.length < 1) {
             //Make sure that if the search input is empty all services will be shown
             createServiceListTable(services);
             return;
         }
         let results = serviceSearch.getMatches(text);
-        if(results.length < 1){
+        if (results.length < 1) {
             bootbox.hideAll();
             error('No matches found');
             return;
@@ -371,7 +378,7 @@ $(document).ready(function() {
             return;
         }
         //Find which option to make selected
-        document.getElementById('theme-select')
+        getElementById('theme-select')
             .childNodes[selectedThemeIndex].selected = true;
     });
 });

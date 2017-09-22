@@ -1,6 +1,13 @@
 const {
     ipcRenderer
 } = require('electron');
+
+const {
+    getElementById,
+    createDocumentFragment,
+    createElement
+} = document;
+
 const {
     success,
     warning,
@@ -14,7 +21,7 @@ const SystemFontManager = require('system-font-families').default;
 const ThemeManagerBuilder = require('../javascript/classes/theme-manager.js');
 const themeManager = new ThemeManagerBuilder(lockr.get('theme-manager-files'));
 const fonts = new SystemFontManager().getFontsSync();
-const fragment = document.createDocumentFragment();
+const fragment = createDocumentFragment();
 
 ipcRenderer.on('receive-selected-image', (event, data) => {
     //We need to make sure that image path does not contain
@@ -54,13 +61,13 @@ ipcRenderer.on('update-ui-settings-theme', (event, data) => {
 
 $(document).ready(function() {
     themeManager.applySelectedTheme();
-    const fontList = document.getElementById('font-list');
-    const cellFontSizeSlider = document.getElementById('cell-font-size');
+    const fontList = getElementById('font-list');
+    const cellFontSizeSlider = getElementById('cell-font-size');
     //Check if there are any user preferences to load
     let userPrefs = lockr.get('ui-preferences');
     //First create the select box
     fonts.forEach(f => {
-        let option = document.createElement('option');
+        let option = createElement('option');
         option.innerText = f;
         fragment.appendChild(option);
     });
