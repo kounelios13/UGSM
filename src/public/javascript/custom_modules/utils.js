@@ -75,7 +75,7 @@ const error = message => {
  * confirm({
  *   title: 'Warning',
  *    message: 'Are you sure you want to exit?',
- *    callback: (answer) => { *
+ *    callback: (answer) => { 
  *        if (answer) { 
  *           //Handle exit
  *            
