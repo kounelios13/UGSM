@@ -55,10 +55,10 @@ describe('utils', function() {
     });
     describe(chalk.keyword('orange')('#warning()'), function() {
         const warnColor = chalk.keyword('orange');
-        it(warnColor('should throw an Error when called without a message'),function(){
-            assert.throws(function(){
+        it(warnColor('should throw an Error when called without a message'), function() {
+            assert.throws(function() {
                 warning();
-            },Error,'Please specify a message');
+            }, Error, 'Please specify a message');
         });
         it(warnColor('should throw an Error when  message has a falsy value(null,false,"",undefined)'), function() {
             assert.throws(function() {
@@ -66,18 +66,35 @@ describe('utils', function() {
             }, 'Error', 'Please specify a message');
         });
     });
-    describe(chalk.red('#error()'),function(){
-        it(chalk.red('should throw an Error when called without a message'),function(){
-            assert.throws(function(){
+    describe(chalk.red('#error()'), function() {
+        it(chalk.red('should throw an Error when called without a message'), function() {
+            assert.throws(function() {
                 error();
-            },Error);
+            }, Error);
         });
     });
-    describe('#confirm()',function(){
-        it('should throw an Error when no callback is provided',function(){
-            assert.throws(function(){
-                confirm({title:"hey",message:"wanna go?"});
-            },Error);
+    describe('#confirm()', function() {
+        it('should throw an Error when no callback is provided', function() {
+            assert.throws(function() {
+                confirm({
+                    title: "hey",
+                    message: "wanna go?"
+                });
+            }, Error);
+        });
+        it('should throw an Error when only callback is passed through the options object', function() {
+            assert.throws(function() {
+                confirm({
+                    callback: (e) => {}
+                });
+            }, Error);
+        });
+        it('should throw an Error when only title is provided through the options', function() {
+            assert.throws(function() {
+                confirm({
+                    title: 'Hey hey hey'
+                })
+            }, Error);
         });
     });
 });
