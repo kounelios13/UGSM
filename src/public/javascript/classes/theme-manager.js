@@ -1,3 +1,4 @@
+const lockr = require('lockr');
 /**
  * @class
  * A class used to keep UGSM themes(mostly css file paths)
@@ -90,7 +91,7 @@ class ThemeManager {
             themes: this._themes,
             selectedTheme: this._selectedTheme
         };
-        localStorage.setItem('theme-manager-files', JSON.stringify(info));
+        lcokr.set('theme-manager-files', info);
     }
 
     /** 
@@ -99,7 +100,7 @@ class ThemeManager {
     clear() {
         this._themes = [];
         this._selectedTheme = null;
-        localStorage.removeItem('theme-manager-files');
+        lcokr.rm('theme-manager-files');
     }
 
     /**
