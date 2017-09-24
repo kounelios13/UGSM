@@ -23,11 +23,15 @@ class Search {
      * //Logs [{name:'foo'},{name:'fooBar'},{name:"FOO"}]
      * @param {String} term The term to test against each name
      * @param {Boolean} [ignoreCase] If true ignores cases when comparing names
+     * @throws It will throw an error if no argument is passed or if term argument has a falsy value
      * @return {Object[]} matches The resuts of the search
      */
 
     getMatches(term, ignoreCase = false) {
-        if (arguments.length == 0 || !term) {
+        //Probably cause of later bugs is some cases
+        term = term.trim();
+        //Make sure that term has not one of the values in the following array
+        if (arguments.length == 0 || [undefined,false,NaN,null,""].includes(term)) {
             throw new Error('Please provide a term to search for');
         }
         let matches = [];
