@@ -3,12 +3,6 @@ const {
 } = require('electron');
 
 const {
-    getElementById,
-    createDocumentFragment,
-    createElement
-} = document;
-
-const {
     success,
     warning,
     error,
@@ -16,12 +10,13 @@ const {
     rgb2hex
     //Path must be relative to views folder
 } = require('../javascript/custom_modules/utils.js');
+const asarUtils = require('../javascript/custom_modules/asar-specific/asar-utils.js');
 const lockr = require('lockr');
 const SystemFontManager = require('system-font-families').default;
 const ThemeManagerBuilder = require('../javascript/classes/theme-manager.js');
 const themeManager = new ThemeManagerBuilder(lockr.get('theme-manager-files'));
 const fonts = new SystemFontManager().getFontsSync();
-const fragment = createDocumentFragment();
+const fragment = document.createDocumentFragment();
 
 ipcRenderer.on('receive-selected-image', (event, data) => {
     //We need to make sure that image path does not contain
@@ -61,13 +56,13 @@ ipcRenderer.on('update-ui-settings-theme', (event, data) => {
 
 $(document).ready(function() {
     themeManager.applySelectedTheme();
-    const fontList = getElementById('font-list');
-    const cellFontSizeSlider = getElementById('cell-font-size');
+    const fontList = document.getElementById('font-list');
+    const cellFontSizeSlider = document.getElementById('cell-font-size');
     //Check if there are any user preferences to load
     let userPrefs = lockr.get('ui-preferences');
     //First create the select box
     fonts.forEach(f => {
-        let option = createElement('option');
+        let option = document.createElement('option');
         option.innerText = f;
         fragment.appendChild(option);
     });
