@@ -3,6 +3,7 @@
   "version": "1.0.6",
   "main": "src/main.js",
   "scripts": {
+    "lint": "electron-forge lint",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
@@ -12,6 +13,7 @@
   },
   "dependencies": {
     "asar": "latest",
+    "css": "^2.2.1",
     "dotenv": "latest",
     "electron-compile": "^6.4.1",
     "lockr": "^0.8.4",
@@ -43,10 +45,11 @@
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
     "chalk": "^2.1.0",
-    "electron-forge": "^4.0.1",
+    "electron-forge": "^4.1.2",
     "electron-prebuilt-compile": "1.7.5",
     "jsdoc": "^3.5.5",
-    "mocha": "^3.5.3"
+    "mocha": "^3.5.3",
+    "npm-check": "^5.4.5"
   },
   "config": {
     "forge": {
