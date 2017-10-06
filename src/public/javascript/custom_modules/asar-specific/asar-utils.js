@@ -153,8 +153,7 @@ function asarCompatibleStylesheet(css) {
     //css = css.trim().replace(/"/g,"'").replace(/'/g,"");
     let filePath =css.replace(/"/g,"");// path.join(__dirname,css);
     const stylesheet = extractStylesheet(filePath);
-    console.log(stylesheet);
-    convertUrlToBase64(stylesheet);
+    changeUrls(stylesheet);
     const asarStylesheet = cssParser.stringify(stylesheet);
     return asarStylesheet;
 }
