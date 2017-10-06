@@ -7,6 +7,7 @@ const {
     info,
     confirm
 } = require('../javascript/custom_modules/utils.js');
+const jcache = require('../javascript/custom_modules/jquery-cache.js')($);
 const {
     ipcRenderer
 } = require('electron');
@@ -53,17 +54,18 @@ const createServiceListTable = (data) => {
     }
     const fragment = document.createDocumentFragment();
     for (let i = 0, max = data.length; i < max; i++) {
+        const {name} = data[i];
         let row = document.createElement("tr");
-        row.id = data[i].name;
+        row.id = name;
         let service = document.createElement("td");
-        service.innerText = data[i].name;
+        service.innerText = name;
         let status = document.createElement("td");
-        status.innerText = data[i].status;
+        status.innerText = name;
         let actionCell = document.createElement("td");
         let actionLink = document.createElement("a");
-        let startServiceLink = createServiceLink('start', data[i].name);
-        let stopServiceLink = createServiceLink('stop', data[i].name);
-        let restartServiceLink = createServiceLink('restart', data[i].name);
+        let startServiceLink = createServiceLink('start', name);
+        let stopServiceLink = createServiceLink('stop', name);
+        let restartServiceLink = createServiceLink('restart', name);
         //Using append() instead of appendChild()
         //read more here: https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/append
 
@@ -92,7 +94,7 @@ serviceEmmiter.on('receive-services', (data) => {
     $('.dialog-info:not(.theme-selection-modal)').modal('hide');
 });
 
-serviceEmmiter.on('service-stop-status', (data) => {
+serviceEmmiter.on('service-stop-status', ({status,name,err}=data) => {
     if (data.status == 'success') {
         success('Service has been stopped');
         updateServiceStatus(data.name, 'inactive');
@@ -101,22 +103,22 @@ serviceEmmiter.on('service-stop-status', (data) => {
     }
 });
 
-serviceEmmiter.on('service-activate-status', (data) => {
-    if (data.status == "success") {
+serviceEmmiter.on('service-activate-status', ({status,name,err}=data) => {
+    if (status == "success") {
         console.log(data)
         success('Service has been started');
-        updateServiceStatus(data.name, "active");
+        updateServiceStatus(name, "active");
     } else {
-        error(data.err);
+        error(err);
     }
 });
 
-serviceEmmiter.on('service-restart-status', (data) => {
-    if (data.status == "success") {
+serviceEmmiter.on('service-restart-status', ({status,name,err}=data) => {
+    if (status == "success") {
         success('Service has been restarted');
-        updateServiceStatus(data.name, 'active');
+        updateServiceStatus(name, 'active');
     } else {
-        error(data.err);
+        error(err);
     }
 });
 
@@ -153,9 +155,8 @@ ipcRenderer.on('request-exit-confirmation', () => {
 
 ipcRenderer.on('apply-new-ui-settings', (event, data) => {
     let tableCellFontSize = data['table-cell-size'];
-    $("body").css(data);
-    $("table").css("font-size", `${tableCellFontSize}px`);
-
+    jcache.get("body").css(data);
+    jcache.get("table").css("font-size", `${tableCellFontSize}px`);
 });
 
 ipcRenderer.on('select-theme', () => {
@@ -170,7 +171,7 @@ ipcRenderer.on('receive-selected-theme', (event, data) => {
     if (![...themes].every(theme => theme.text != data)) {
         return;
     }
-    $('#theme-select').append(`<option>${data}</option>`);
+    jcache.get('#theme-select').append(`<option>${data}</option>`);
     //Now we need to save that theme into localStorage
     themeManager.addTheme(data);
     themeManager.saveThemes();
@@ -193,7 +194,7 @@ const updateServiceStatus = (serviceName, status) => {
         //If filtered we need to remove the affected row
         let activeRows = document.querySelector("tbody").children;
         if (activeRows.length != services.length) {
-            serviceRow.remove()
+            serviceRow.remove();
         }
     }
 };
@@ -306,8 +307,8 @@ $(document).ready(function() {
     if (lockr.get("ui-preferences")) {
         let cssData = lockr.get("ui-preferences");
         let cellFontSize = cssData['table-cell-size'];
-        $("body").css(cssData);
-        $("table").css("font-size", `${cellFontSize}px`);
+        jcache.get("body").css(cssData);
+        jcache.get("table").css("font-size", `${cellFontSize}px`);
     }
     //Loaded all css now show the window
     ipcRenderer.send('show-application');
@@ -346,7 +347,7 @@ $(document).ready(function() {
         });
     });
     $("#search-btn").on('click', function() {
-        let text = $("#search").val().trim();
+        let text = jcache.get("#search").val().trim();
         if (text.length < 1) {
             //Make sure that if the search input is empty all services will be shown
             createServiceListTable(services);

@@ -1,4 +1,5 @@
 const lockr = require('lockr');
+const asarUtils = require('../custom_modules/asar-specific/asar-utils.js');
 /**
  * @class
  * A class used to keep UGSM themes(mostly css file paths)
@@ -76,7 +77,7 @@ class ThemeManager {
 
     /**
      * Get the index of the selected theme
-     *  @returns {Number} selectedIndex the index of the selectd theme
+     *  @returns {Number} selectedIndex the index of the selected theme
      */
     getSelectedThemeIndex() {
         let selectedIndex = this._themes.indexOf(this._selectedTheme);
@@ -91,7 +92,7 @@ class ThemeManager {
             themes: this._themes,
             selectedTheme: this._selectedTheme
         };
-        lcokr.set('theme-manager-files', info);
+        lockr.set('theme-manager-files', info);
     }
 
     /** 
@@ -107,39 +108,26 @@ class ThemeManager {
      * Applies the selected theme(if any) to the current UGSM instance
      */
     applySelectedTheme() {
-        const appIsInAsar = process.mainModule.filename.includes('app.asar');
-        if (this.getSelectedTheme()) {
+        const themeUrl = this.getSelectedTheme();
+        if (!themeUrl) {
+            return;
+        }
+
+        const appIsInAsar = asarUtils.appIsInAsar();
+        if (appIsInAsar) {
+            asarUtils.convertThemeToStyleTag(themeUrl, 'external-theme');
+        } else {
             //Find if we have created a link tag before so we can change its href attribute
             let styleTag = document.getElementById('external-theme');
             if (!styleTag) {
-                if (appIsInAsar) {
-                    styleTag = document.createElement('style');
-                    styleTag.id = 'external-theme';
-                } else {
-                    styleTag = document.createElement('link');
-                    styleTag.rel = 'stylesheet';
-                    styleTag.href = this.getSelectedTheme();
-                    styleTag.id = 'external-theme';
-                }
+                styleTag = document.createElement('link');
+                styleTag.rel = 'stylesheet';
+                styleTag.href = themeUrl;
+                styleTag.id = 'external-theme';
                 document.head.appendChild(styleTag);
             }
-
-            //When applying a new theme we have to check if app is running through an asar archive
-            //If yes we have to read its contents 
-            //and the apply them to a new style tag.
-            //The reason is that because the app is compiled any reference to an external file
-            //will throw an error for the file not being precompiled
-            //https://github.com/electron/electron-compile/issues/171
-            if (appIsInAsar) {
-                const themeContents = fs.readFileSync(this.getSelectedTheme(), 'utf-8');
-                if (themeContents) {
-                    styleTag.innerHTML = themeContents;
-                }
-                //We  can load external resourcess so just load the new theme
-            } else {
-                styleTag.href = this.getSelectedTheme();
-            }
-        }
+            styleTag.href = themeUrl;
+        }   
     }
 }
 

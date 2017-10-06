@@ -10,13 +10,14 @@ const {
     rgb2hex
     //Path must be relative to views folder
 } = require('../javascript/custom_modules/utils.js');
+
+const jcache = require('../javascript/custom_modules/jquery-cache.js')($);
 const asarUtils = require('../javascript/custom_modules/asar-specific/asar-utils.js');
 const lockr = require('lockr');
 const SystemFontManager = require('system-font-families').default;
 const ThemeManagerBuilder = require('../javascript/classes/theme-manager.js');
 const themeManager = new ThemeManagerBuilder(lockr.get('theme-manager-files'));
 const fonts = new SystemFontManager().getFontsSync();
-const fragment = document.createDocumentFragment();
 
 ipcRenderer.on('receive-selected-image', (event, data) => {
     //We need to make sure that image path does not contain
@@ -34,8 +35,14 @@ ipcRenderer.on('receive-selected-image', (event, data) => {
 ipcRenderer.on('export-status', (event, data) => {
     //Time to see whether we succeed 
     //to export our ui settings as a theme or not
-    if (data.fileExported) {
-        if (data.permissionsChanged) {
+    //Don't destructure error property from data
+    //Since it will interfere with the error() function
+    const {
+        fileExported,
+        permissionsChanged
+    } = data;
+    if (fileExported) {
+        if (permissionsChanged) {
             success('Your ui settings have been exported as a UGSM theme');
         } else {
             warning('Your ui settings have been exported as a UGSM theme.However this theme will be read only which means no editable');
@@ -54,23 +61,69 @@ ipcRenderer.on('update-ui-settings-theme', (event, data) => {
     themeManager.applySelectedTheme();
 });
 
+/**
+ * Generate a css strings from settings saved to localStorage
+ * @param settings The settings to get the css from
+ * @returns css The generated css string
+ */
+function generateCSSFromSettings(settings) {
+    //console.log(settings)
+    let css = `
+        body{
+            background:${settings.background};
+            background-size:cover;
+            background-color:${settings['background-color']};
+            font-family:${settings['font-family']};
+            color:${settings.color};
+        }
+    `;
+    if (settings['table-cell-size']) {
+        css += `table{font-size:${settings['table-cell-size']}px;}`;
+    }
+    return css;
+}
+
+/**
+ * Create a settings styletag and append it to head 
+ * @param id The id of the settings styletag
+ * @returns settings The settings styletag
+ * @throws Error if no id is passed
+ * @throws Error if an element with given id exists
+ */
+function createSettingsStyleTag(id) {
+    if (!id) {
+        throw new Error('Please provide an id');
+    }
+    if (document.getElementById(id)) {
+        throw new Error(`Element with ${id} already exists`);
+    }
+    const settings = document.createElement('style');
+    settings.id = id;
+    document.head.appendChild(settings);
+    return settings;
+}
 $(document).ready(function() {
+    const settingsId = 'settings-style';
+    const fragment = document.createDocumentFragment();
     themeManager.applySelectedTheme();
     const fontList = document.getElementById('font-list');
     const cellFontSizeSlider = document.getElementById('cell-font-size');
     //Check if there are any user preferences to load
     let userPrefs = lockr.get('ui-preferences');
+    
     //First create the select box
     fonts.forEach(f => {
         let option = document.createElement('option');
         option.innerText = f;
         fragment.appendChild(option);
-    });
+    })
     fontList.appendChild(fragment);
     //Now you can check for preferences and select  saved font from font-list
     if (userPrefs) {
         //Good 
         //Loaded user preferences.Now apply them
+        const settingsStyleTag = createSettingsStyleTag(settingsId);
+        settingsStyleTag.innerHTML = generateCSSFromSettings(userPrefs);
         let tableCellSize = userPrefs['table-cell-size'] || 14;
         let textColor = userPrefs['color'];
         let bgColor = userPrefs['background-color'];
@@ -80,12 +133,15 @@ $(document).ready(function() {
             fontList[fontIndex].selected = true;
         }
         cellFontSizeSlider.value = tableCellSize;
-        $("body").css(userPrefs);
-        $("table").css("font-size", `${tableCellSize}px`);
+        //@TODO
+        //Add specific ids to settings view so we apply settings to specific ids intead of a general name 
+        //like this -> $("body.settings").css() or $("table.settings").css()
+        jcache.get("body").css(userPrefs);
+        jcache.get("table").css("font-size", `${tableCellSize}px`);
         //Use only hex colors
         try {
-            $("#text-color-selection").val(rgb2hex(textColor));
-            $("#bg-color-selection").val(rgb2hex(bgColor));
+            jcache.get("#text-color-selection").val(rgb2hex(textColor));
+            jcache.get("#bg-color-selection").val(rgb2hex(bgColor));
         } catch (e) {
             if (e.message != 'Please pass a valid rgb color') {
                 throw e;
@@ -98,35 +154,56 @@ $(document).ready(function() {
     });
     $(fontList).on("change", function() {
         let font = $(this).val();
-        $("body").css("font-family", font);
+        jcache.get("body").css("font-family", font);
     });
     $(cellFontSizeSlider).on('mousemove input', function() {
         let size = `${$(this).val()}px`;
-        $("td").css('font-size', size);
+        jcache.get("td").css('font-size', size);
     });
     $("#text-color-selection").on("input", function() {
         let c = $(this).val();
-        $("body").css("color", c);
+        jcache.get("body").css("color", c);
     });
     $('#bg-color-selection').on("input", function() {
         let c = $(this).val();
-        $("body").css("background-color", c);
+        jcache.get("body").css("background-color", c);
     });
     $("#apply").on("click", function() {
+        const body = jcache.get("body");
+        //Might cause some parsing errors
+        const background = `body{background:${body.css("background")};}`;
+        console.log(background);
         let cssData = {
-            background: $("body").css("background"),
+            /**
+            * This will throw an error
+            * the reason is that the background url
+            * is quoted so fs.readFileSync path is like this '"foo.jpg"' instead of 'foo.jpg'
+            */
+            background: asarUtils.asarCompatibleStylesheet(background),
             "background-size": "cover",
-            "font-family": $("body").css("font-family"),
-            "color": $("body").css("color"),
-            "background-color": $("body").css("background-color"),
+            "font-family": body.css("font-family"),
+            "color": body.css("color"),
+            "background-color": body.css("background-color"),
             "table-cell-size": $(cellFontSizeSlider).val()
         };
+
+        /* 
+         * I need to make sure that all processes use the theme-manager
+         * to overcome asar-specific problems 
+         * when selecting a background image
+         * Each process will have to deal with the fucking asar problems
+         */
         ipcRenderer.send('apply-ui-settings', cssData);
         //Let's save our css properties to localStorage
         lockr.set('ui-preferences', cssData);
         success('User preferences have been saved');
     });
     $("#delete-settings").on("click", function() {
+        /**
+         * @TODO
+         * Add or use logic here to use ugsm default themes and settings 
+         * without reloading the app
+         */
         confirm({
             message: 'Are you sure you want to clear your ui preferences?',
             callback: (answer) => {
@@ -156,6 +233,9 @@ $(document).ready(function() {
             error("You don't have any saved settings saved");
             return;
         }
+        //@TODO
+        //Maybe I should the following for background images and convert theme
+        //to base64 strings before saving them
         let cssString = `
 body{
     color:${prefs.color};

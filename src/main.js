@@ -55,7 +55,7 @@ function createWindows() {
         width: 1200,
         title: "UGSM v1.0.6",
         icon: path.join(__dirname, './icons/ugsmv2.png'),
-        show: false,
+        show: production == false,
         backgroundColor: 'rgba(190,70,9,.8)'
     });
     win.loadURL(url.format({

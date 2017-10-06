@@ -1,10 +1,10 @@
 /**
+ * @module utils
+ */
+
+/**
  * @file A set of ui and color utilities
  * @author Manos Kounelakis
- */
- 
-/**
- * @module utils
  */
 
 //@TODO
@@ -98,11 +98,11 @@ const confirm = options => {
 
 /**
  * Convert an rgb color to hex format
- * @example <caption> Convert rgb(255,255,255)> to hex </caption>
+ * @example <caption> Convert rgb(255,255,255) to hex </caption>
  * var hexColor = rgb2hex('rgb(255,255,255)'); 
  * console.log(hexColor); //Logs '#ffffff'
- *@param {String}color The rgb color
- *@returns {String}hexColor The rgb color in hex format
+ *@param {String} color The rgb color
+ *@returns {String} hexColor The rgb color in hex format
  */
 
 const rgb2hex = color => {
