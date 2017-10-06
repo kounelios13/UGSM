@@ -1,10 +1,10 @@
 /**
- * @file A set of methods for solving asar specific issues
- * @author Manos Kounelakis
+ * @module asar-utils
  */
 
 /**
- * @module asar-utils
+ * @file A set of methods for solving asar specific issues
+ * @author Manos Kounelakis
  */
 
 const fs = require('fs');
@@ -85,6 +85,12 @@ function appIsInAsar() {
  * @returns {Object} themeStyleTag The styletag that was created
  */
 function injectThemeStyleTag(id) {
+    /**
+    * @TODO
+    * Maybe this function has nothing to do with that module
+    * Maybe I should create another module just for functions relevant
+    * to ui-settings renderer?(Or should I move that function inside that renderer?)
+    */
     themesInjected = true;
     let themeStyleTag = document.getElementById(id);
     if (!themeStyleTag) {
@@ -117,12 +123,41 @@ function injectSettingsStyleTag(id) {
  * @returns {String} contents Contentes of the file
  */
 function readThemeContents(file) {
+    /**
+    * @TODO
+    * Maybe I should use the async version of readFileSync 
+    * and pass a callback function to readThemeContents?
+    */
     let contents = readFileSync(file, {
         encoding: 'utf-8'
     });
     return contents;
 }
 
+/**
+ * Make sure that a css string is asar compatible(images have been base64 encoded)
+ * @param {String} css The css string
+ * @returns {String} asarStylesheet A css string that is asar compatible
+ */
+function asarCompatibleStylesheet(css) {
+
+/*    if(!appIsInAsar()){
+        return css;
+    }*/
+    /**
+    * For some reason file url coming from background image comes like this ->'"file://foo.jpg"' so the single
+    * quotes around double quotes fuck my program :(
+    *
+    */
+    //css = css.replace(/'/g,"");
+    //css = css.trim().replace(/"/g,"'").replace(/'/g,"");
+    let filePath =css.replace(/"/g,"");// path.join(__dirname,css);
+    const stylesheet = extractStylesheet(filePath);
+    console.log(stylesheet);
+    convertUrlToBase64(stylesheet);
+    const asarStylesheet = cssParser.stringify(stylesheet);
+    return asarStylesheet;
+}
 
 /**
  * This function reads a css file and outputs its contents in a new styletag that is injected on the fly
@@ -145,8 +180,7 @@ function convertThemeToStyleTag(theme, id) {
     let themeContents = readThemeContents(theme);
     let themeContainsBgImage = themeContents.contains('url');
     if (themeContainsBgImage) {
-       const stylesheet = extractStylesheet(themeContents);
-       changeUrls(stylesheet);
+        themeContents = asarCompatibleStylesheet(themeContents);
     }
     styleTag.innerHTML = themeContents;
 }
@@ -154,5 +188,6 @@ function convertThemeToStyleTag(theme, id) {
 module.exports = {
     appIsInAsar,
     injectSettingsStyleTag,
+    asarCompatibleStylesheet,
     convertThemeToStyleTag
 };

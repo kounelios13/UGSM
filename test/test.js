@@ -1,4 +1,9 @@
 const assert = require('assert');
+//Just a way to prevent tests from failing
+//When a module uses window.document 
+global.document = {};
+global.window = global;
+global.window.document = global.document;
 const {
     rgb2hex,
     success,
@@ -9,6 +14,7 @@ const {
 const {
     Search
 } = require('../src/public/javascript/classes/search.js');
+const {convertThemeToStyleTag} = require('../src/public/javascript/custom_modules/asar-specific/asar-utils.js');
 const chalk = require('chalk');
 before(function() {
     //Clear console before running any tests
@@ -160,6 +166,30 @@ describe('Search', function() {
         it('should return an empty array when a Search instance has been initiated with an empty array or with the default array', function() {
             const emptySearcher = new Search();
             assert.equal(emptySearcher.getMatches('a').length, 0);
+        });
+    });
+});
+describe('asar-utils',function(){
+    describe('#convertThemeToStyleTag',function(){
+        it('should throw an Error when called with no argument',function(){
+            assert.throws(function(){
+                asarUtils.convertThemeToStyleTag();
+            },Error);
+        });
+        it('should throw an Error when only theme is "" and only id has a not falsy value',function(){
+            assert.throws(function(){
+                asarUtils.convertThemeToStyleTag("",'asar-embed');
+            },Error);
+        });
+        it('should throw an Error when undefined is passed as theme parameter',function(){
+            assert.throws(function(){
+                asarUtils.convertThemeToStyleTag(undefined,"foo");
+            },Error);
+        });
+        it('should throw an Error when both theme and id parameters have a falsy value',function(){
+            assert.throws(function(){
+                asarUtils.convertThemeToStyleTag(undefined,null);
+            },Error);
         });
     });
 });
