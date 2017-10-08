@@ -1,5 +1,7 @@
 package-lock.json
 node_modules
+compileCache*
+electron-forge
 jsdoc
 out/
 *.kra
