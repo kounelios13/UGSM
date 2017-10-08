@@ -25,7 +25,12 @@ ipcRenderer.on('receive-selected-image', (event, data) => {
     //Also in css() use "background" instead of "background-image"
     //Because if image path contains spaces even after replacing them 
     //the code won't work
-    data = data.replace(/ /g, '%20');
+    /*data = data.replace(/ /g, '%20');
+    imagePath = data;*/
+    if(!data){
+        warning(`The image you selected couldn't be used.Please try another one`);
+        return;
+    }
     $("body").css({
         "background": `url(${data}) no-repeat center center fixed`,
         "background-size": "cover"
@@ -110,7 +115,7 @@ $(document).ready(function() {
     const cellFontSizeSlider = document.getElementById('cell-font-size');
     //Check if there are any user preferences to load
     let userPrefs = lockr.get('ui-preferences');
-    
+
     //First create the select box
     fonts.forEach(f => {
         let option = document.createElement('option');
@@ -170,29 +175,14 @@ $(document).ready(function() {
     });
     $("#apply").on("click", function() {
         const body = jcache.get("body");
-        //Might cause some parsing errors
-        const background = `body{background:${body.css("background")};}`;
-        console.log(background);
         let cssData = {
-            /**
-            * This will throw an error
-            * the reason is that the background url
-            * is quoted so fs.readFileSync path is like this '"foo.jpg"' instead of 'foo.jpg'
-            */
-            background: asarUtils.asarCompatibleStylesheet(background),
+            background: body.css("background"),
             "background-size": "cover",
             "font-family": body.css("font-family"),
             "color": body.css("color"),
             "background-color": body.css("background-color"),
             "table-cell-size": $(cellFontSizeSlider).val()
         };
-
-        /* 
-         * I need to make sure that all processes use the theme-manager
-         * to overcome asar-specific problems 
-         * when selecting a background image
-         * Each process will have to deal with the fucking asar problems
-         */
         ipcRenderer.send('apply-ui-settings', cssData);
         //Let's save our css properties to localStorage
         lockr.set('ui-preferences', cssData);

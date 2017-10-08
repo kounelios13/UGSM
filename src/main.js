@@ -21,7 +21,7 @@ const {
 //This will be used to quit app in case something happens due to bad code if not in production mode
 //First command line arg is node 2nd is the name of the script and the third one is our production
 /*let production = process.argv[2] == 'true';*/
-let production = true;
+let production = false;
 let win = null;
 let uiPreferencesWin = null;
 let allowAppTermination = false;
@@ -123,7 +123,26 @@ ipcMain.on('show-open-dialog', (event, _) => {
         if (data && data.length) {
             //data is an array containing a single item
             //which is the path of the selected image
-            event.sender.send('receive-selected-image', data[0]);
+            /**
+             * Note to my self.To save my ass from lots of waisted hours
+             * as soon as you read the file path read the file
+             * as a data uri(base64) and send it back to ui-settings renderer
+             * My future self will probably thanks the young me for this
+             * Don't attempt to extract the image path from the ui-settings renderer
+             */
+            let fileExtension = data[0].split('.').pop().toLowerCase();
+            let fsOptions = {
+                encoding: 'base64'
+            };
+            let file = data[0];
+            fs.readFile(file, fsOptions, (err, base64) => {
+                let encoded = null;
+                if (!err) {
+                    encoded = `data:image/${fileExtension};base64,${base64}`;
+                }
+                console.log(`Your encoded string is ${encoded.substring(0,70)}`)
+                event.sender.send('receive-selected-image', encoded);
+            });
         }
     });
 });
