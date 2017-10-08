@@ -60,7 +60,7 @@ const createServiceListTable = (data) => {
         let service = document.createElement("td");
         service.innerText = name;
         let status = document.createElement("td");
-        status.innerText = name;
+        status.innerText = data[i].status;
         let actionCell = document.createElement("td");
         let actionLink = document.createElement("a");
         let startServiceLink = createServiceLink('start', name);
@@ -95,17 +95,20 @@ serviceEmmiter.on('receive-services', (data) => {
 });
 
 serviceEmmiter.on('service-stop-status', ({status,name,err}=data) => {
-    if (data.status == 'success') {
+    //Don't use data.status or data.name
+    //It will throw data.status or data.whatever is undefined
+    //The reason is that we extract the status,name and err from the data object
+    //and then we throw it away so we can't use it anymore
+    if (status == 'success') {
         success('Service has been stopped');
-        updateServiceStatus(data.name, 'inactive');
+        updateServiceStatus(name, 'inactive');
     } else {
-        error(data.err);
+        error(err);
     }
 });
 
 serviceEmmiter.on('service-activate-status', ({status,name,err}=data) => {
     if (status == "success") {
-        console.log(data)
         success('Service has been started');
         updateServiceStatus(name, "active");
     } else {
