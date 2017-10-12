@@ -1,24 +1,24 @@
 {
   "name": "gui-service-manager",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "main": "src/main.js",
   "scripts": {
     "lint": "electron-forge lint",
     "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
+    "package": "rm -rf jsdoc out && electron-forge package",
+    "make": "rm -rf jsdoc out && electron-forge make",
     "documentation": "rm -rf jsdoc && jsdoc -c conf.json",
     "external-build": "git reset --hard && git fetch && git pull && electron-forge make --arch=x64",
     "test": "mocha"
   },
   "dependencies": {
+    "acorn": "^5.1.2",
     "asar": "latest",
     "css": "^2.2.1",
     "dotenv": "latest",
-    "electron-compile": "^6.4.1",
+    "electron-compile": "^6.4.2",
     "lockr": "^0.8.4",
     "md5": "latest",
-    "npm": "^5.4.1",
     "sudo-prompt": "^7.1.1",
     "system-font-families": "latest"
   },
@@ -46,10 +46,9 @@
     "babel-preset-react": "^6.24.1",
     "chalk": "^2.1.0",
     "electron-forge": "^4.1.2",
-    "electron-prebuilt-compile": "1.7.5",
+    "electron-prebuilt-compile": "1.7.8",
     "jsdoc": "^3.5.5",
-    "mocha": "^3.5.3",
-    "npm-check": "^5.4.5"
+    "mocha": "^4.0.1"
   },
   "config": {
     "forge": {
