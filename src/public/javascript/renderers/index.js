@@ -262,8 +262,12 @@ function showAvailableThemes() {
                     let themeIndex = themeSelect.selectedIndex;
                     let themeToRemove = themeSelect.value;
                     themeManager.removeTheme(themeToRemove);
-                    //Remove theme from theme-selection modal
-                    themeSelect.childNodes[themeIndex].remove();
+                    let {childNodes} = themeSelect;
+                    //Try to remove only when the childNode we want  exists
+                    if(childNodes[themeIndex]){
+                        //Remove theme from theme-selection modal
+                        childNodes[themeIndex].remove();
+                    }
                     //Don't close modal
                     return false;
                 }

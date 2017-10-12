@@ -8,40 +8,52 @@
  */
 
 const fs = require('fs');
+const path = require('path');
 const {
     readFileSync
 } = fs;
 
 const cssParser = require('css');
-
 /**
  * Convert an image to a base64 string representation
  * @param {String} url The url of the image
  * @returns {String} base64 The base64 string encoding of the image 
  */
 function imageToBase64uri(url) {
-    let base64 = readFileSync(url,{encoding:"base64"});
+    let base64 = null;
+
+    try {
+        base64 = readFileSync(url, {
+            encoding: "base64"
+        });
+    } catch (e) {
+        console.warn(e.message);
+        return base64;
+    }
     let fileExtension = url.split(".").pop().toLowerCase();
     base64 = `data:image/${fileExtension};base64,${base64}`;
     return base64;
 }
 
 /**
-* Take the AST representation of a css string
-* using the css module and extract the stylesheet
-* @param {String} cssTheme The css string we will extract the stylesheet from
-* @returns {Object} stylesheet The extracted stylesheet
-*/
-function extractStylesheet(cssTheme){
-    const {stylesheet} = cssParser.parse(cssTheme);
+ * Take the AST representation of a css string
+ * using the css module and extract the stylesheet
+ * @param {String} cssTheme The css string we will extract the stylesheet from
+ * @returns {Object} stylesheet The extracted stylesheet
+ */
+function extractStylesheet(cssTheme) {
+    const {
+        stylesheet
+    } = cssParser.parse(cssTheme);
     return stylesheet;
 }
 
 /**
-* Change all urls to base64 encoded strings inside a stylesheet
-* @param {Object} stylesheet The stylesheet which contains the urls to change
-*/
-function changeUrls(stylesheet) {
+ * Change all urls to base64 encoded strings inside a stylesheet
+ * @param {Object} stylesheet The stylesheet which contains the urls to change
+ * @param {String} stylesheetFilePath This is the full path to the css file that contains our stylesheet
+ */
+function changeUrls(stylesheet, stylesheetFilePath) {
     const declarations = [];
     stylesheet.rules.forEach(rule => {
         rule.declarations.filter(declaration => {
@@ -61,6 +73,7 @@ function changeUrls(stylesheet) {
     declarations.forEach(declaration => {
         let partsAfterUrl = declaration.value.split(")")[1];
         let imagePath = declaration.value.split("url(")[1].split(")")[0];
+        imagePath = convertRelativeToAbsoluteUrl(imagePath, stylesheetFilePath);
         let base64 = imageToBase64uri(imagePath);
         let fileExtension = imagePath.split(".").pop().toLowerCase();
         let value = `url(${base64}) ${partsAfterUrl}`;
@@ -86,18 +99,22 @@ function appIsInAsar() {
  */
 function injectThemeStyleTag(id) {
     /**
-    * @TODO
-    * Maybe this function has nothing to do with that module
-    * Maybe I should create another module just for functions relevant
-    * to ui-settings renderer?(Or should I move that function inside that renderer?)
-    */
+     * @TODO
+     * Maybe this function has nothing to do with that module
+     * Maybe I should create another module just for functions relevant
+     * to ui-settings renderer?(Or should I move that function inside that renderer?)
+     */
     themesInjected = true;
     let themeStyleTag = document.getElementById(id);
     if (!themeStyleTag) {
         themeStyleTag = document.createElement('style');
-        head.appendChild(themeStyleTag);
+        //Assign a unique data attribute 
+        //This will help us when injecting user settings
+        themeStyleTag.setAttribute('theme-style-tag');
+        document.head.appendChild(themeStyleTag);
+
     }
-    return styleTag;
+    return themeStyleTag;
 }
 
 /**
@@ -124,36 +141,34 @@ function injectSettingsStyleTag(id) {
  */
 function readThemeContents(file) {
     /**
-    * @TODO
-    * Maybe I should use the async version of readFileSync 
-    * and pass a callback function to readThemeContents?
-    */
-    let contents = readFileSync(file, {
-        encoding: 'utf-8'
-    });
+     * @TODO
+     * Maybe I should use the async version of readFileSync 
+     * and pass a callback function to readThemeContents?
+     */
+    let contents = null;
+    try {
+        contents = readFileSync(file, {
+            encoding: 'utf-8'
+        });
+    } catch (e) {
+        console.log('Failed to parse theme:', e.message);
+    }
     return contents;
 }
 
 /**
  * Make sure that a css string is asar compatible(images have been base64 encoded)
  * @param {String} css The css string
+ * @param [String] themeFullPath A full path to a css file
  * @returns {String} asarStylesheet A css string that is asar compatible
  */
-function asarCompatibleStylesheet(css) {
-
-/*    if(!appIsInAsar()){
+function asarCompatibleStylesheet(css, themeFullPath) {
+    if (!appIsInAsar()) {
+        //No need to procceed .
         return css;
-    }*/
-    /**
-    * For some reason file url coming from background image comes like this ->'"file://foo.jpg"' so the single
-    * quotes around double quotes fuck my program :(
-    *
-    */
-    //css = css.replace(/'/g,"");
-    //css = css.trim().replace(/"/g,"'").replace(/'/g,"");
-    let filePath =css.replace(/"/g,"");// path.join(__dirname,css);
-    const stylesheet = extractStylesheet(filePath);
-    changeUrls(stylesheet);
+    }
+    const stylesheet = extractStylesheet(css);
+    changeUrls(stylesheet, themeFullPath);
     const asarStylesheet = cssParser.stringify(stylesheet);
     return asarStylesheet;
 }
@@ -177,11 +192,39 @@ function convertThemeToStyleTag(theme, id) {
     }
     let styleTag = injectThemeStyleTag(id);
     let themeContents = readThemeContents(theme);
-    let themeContainsBgImage = themeContents.contains('url');
+    //@TODO 
+    //I think that using themeContents.includes() break the app in production
+    //Investigate more
+    let themeContainsBgImage = themeContents.indexOf('url') != -1;
     if (themeContainsBgImage) {
-        themeContents = asarCompatibleStylesheet(themeContents);
+        //Pass the full path of the theme.We might need it
+        //to be able to use the full path of the background images 
+        //we want to encode
+        themeContents = asarCompatibleStylesheet(themeContents, theme);
     }
     styleTag.innerHTML = themeContents;
+}
+/**
+ * Convert a file path from relative to absolute
+ * When we import a css file that might have a url
+ * that url wil not work since it might be relative to the location 
+ * of the css file .So trying to use it from our app will 
+ * throw a file not found error
+ * @param {String} filePath The filepath we want to convert 
+ * @param {String} cssDir A directory which contaings our css file
+ * @returns {String} absolutePath 
+ */
+function convertRelativeToAbsoluteUrl(filePath, cssDir) {
+    let absolutePath = null;
+    let urlRegex = new RegExp(/\b(https?|ftp|file):\/\/[\-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[\-A‌​-Za-z0-9+&@#\/%=~_|]‌​/);
+    if (urlRegex.test(filePath)) {
+        absolutePath = filepath;
+    } else if (path.isAbsolutePath(filePath) && fs.existsSync(filePath)) {
+        absolutePath = filePath;
+    } else {
+        absolutePath = path.join(cssDir, filePath);
+    }
+    return absolutePath;
 }
 
 module.exports = {
