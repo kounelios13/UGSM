@@ -81,14 +81,13 @@ function changeUrls(stylesheet, stylesheetFilePath) {
     });
 }
 
-let themesInjected = false;
-
 /**
  * Detect whether the app is running inside an asar archive
  * @returns {Boolean} isAsar whether app is running inside an asar archive or not
  */
 function appIsInAsar() {
-    const isAsar = process.mainModule.filename.includes('app.asar');
+    const {filename} = process.mainModule;
+    const isAsar = filename.includes('app.asar');
     return isAsar;
 }
 
@@ -104,13 +103,12 @@ function injectThemeStyleTag(id) {
      * Maybe I should create another module just for functions relevant
      * to ui-settings renderer?(Or should I move that function inside that renderer?)
      */
-    themesInjected = true;
     let themeStyleTag = document.getElementById(id);
     if (!themeStyleTag) {
         themeStyleTag = document.createElement('style');
         //Assign a unique data attribute 
         //This will help us when injecting user settings
-        themeStyleTag.setAttribute('theme-style-tag');
+        themeStyleTag.setAttribute('theme-style-tag-injected', true);
         document.head.appendChild(themeStyleTag);
 
     }
@@ -123,14 +121,18 @@ function injectThemeStyleTag(id) {
  */
 
 function injectSettingsStyleTag(id) {
-    if (themesInjected) {
-        throw new Error('Settings must be injected before user themes');
-    }
+    let themeStyleTag = document.querySelector('[data-theme-style-tag-injected]');
+
     let settingsStyleTag = document.getElementById(id);
     if (!settingsStyleTag) {
         settingsStyleTag = document.createElement('style');
         settingsStyleTag.id = id;
-        head.appendChild(settingsStyleTag);
+        if (themeStyleTag) {
+            //We always want to load user settings before themes
+            document.head.insertBefore(themeStyleTag, settingsStyleTag);
+        } else {
+            document.head.appendChild(settingsStyleTag);
+        }
     }
 }
 
@@ -216,7 +218,7 @@ function convertThemeToStyleTag(theme, id) {
  */
 function convertRelativeToAbsoluteUrl(filePath, cssDir) {
     let absolutePath = null;
-    let urlRegex = new RegExp(/\b(https?|ftp|file):\/\/[\-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[\-A‌​-Za-z0-9+&@#\/%=~_|]‌​/);
+    let urlRegex = new RegExp("(http|ftp|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?");
     if (urlRegex.test(filePath)) {
         absolutePath = filepath;
     } else if (path.isAbsolutePath(filePath) && fs.existsSync(filePath)) {

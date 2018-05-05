@@ -12,7 +12,6 @@ const {
 } = require('../javascript/custom_modules/utils.js');
 
 const jcache = require('../javascript/custom_modules/jquery-cache.js')($);
-const asarUtils = require('../javascript/custom_modules/asar-specific/asar-utils.js');
 const lockr = require('lockr');
 const SystemFontManager = require('system-font-families').default;
 const ThemeManagerBuilder = require('../javascript/classes/theme-manager.js');

@@ -54,7 +54,9 @@ const createServiceListTable = (data) => {
     }
     const fragment = document.createDocumentFragment();
     for (let i = 0, max = data.length; i < max; i++) {
-        const {name} = data[i];
+        const {
+            name
+        } = data[i];
         let row = document.createElement("tr");
         row.id = name;
         let service = document.createElement("td");
@@ -81,8 +83,9 @@ const createServiceListTable = (data) => {
         }
         fragment.appendChild(row);
     }
-    document.querySelector("tbody").innerHTML = "";
-    document.querySelector("tbody").appendChild(fragment);
+    let tbody = document.querySelector("tbody");
+    tbody.innerHTML = "";
+    tbody.appendChild(fragment);
 };
 
 
@@ -94,7 +97,11 @@ serviceEmmiter.on('receive-services', (data) => {
     $('.dialog-info:not(.theme-selection-modal)').modal('hide');
 });
 
-serviceEmmiter.on('service-stop-status', ({status,name,err}=data) => {
+serviceEmmiter.on('service-stop-status', ({
+    status,
+    name,
+    err
+} = data) => {
     //Don't use data.status or data.name
     //It will throw data.status or data.whatever is undefined
     //The reason is that we extract the status,name and err from the data object
@@ -107,7 +114,11 @@ serviceEmmiter.on('service-stop-status', ({status,name,err}=data) => {
     }
 });
 
-serviceEmmiter.on('service-activate-status', ({status,name,err}=data) => {
+serviceEmmiter.on('service-activate-status', ({
+    status,
+    name,
+    err
+} = data) => {
     if (status == "success") {
         success('Service has been started');
         updateServiceStatus(name, "active");
@@ -116,7 +127,11 @@ serviceEmmiter.on('service-activate-status', ({status,name,err}=data) => {
     }
 });
 
-serviceEmmiter.on('service-restart-status', ({status,name,err}=data) => {
+serviceEmmiter.on('service-restart-status', ({
+    status,
+    name,
+    err
+} = data) => {
     if (status == "success") {
         success('Service has been restarted');
         updateServiceStatus(name, 'active');
@@ -125,7 +140,7 @@ serviceEmmiter.on('service-restart-status', ({status,name,err}=data) => {
     }
 });
 
-ipcRenderer.on('filter-services', (event, data) => {
+ipcRenderer.on('filter-services', (event, {view}=data) => {
     if (!services.length) {
         return;
     }
@@ -133,7 +148,7 @@ ipcRenderer.on('filter-services', (event, data) => {
         inactiveServices = 1,
         allServices = 2;
     let curServices = null;
-    switch (data.view) {
+    switch (view) {
         case activeServices:
             curServices = serviceManager.getActiveServices();
             break;
@@ -167,6 +182,8 @@ ipcRenderer.on('select-theme', () => {
 });
 
 ipcRenderer.on('receive-selected-theme', (event, data) => {
+    //@TODO
+    //Cache 'theme-select' as a vanila javascript selector 
     let themes = document.getElementById('theme-select').childNodes;
     //Check if theme exists by checking all available themes
     //.every() checks all element inside an array(or an array like object) to see if they pass the function
@@ -262,9 +279,11 @@ function showAvailableThemes() {
                     let themeIndex = themeSelect.selectedIndex;
                     let themeToRemove = themeSelect.value;
                     themeManager.removeTheme(themeToRemove);
-                    let {childNodes} = themeSelect;
+                    let {
+                        childNodes
+                    } = themeSelect;
                     //Try to remove only when the childNode we want  exists
-                    if(childNodes[themeIndex]){
+                    if (childNodes[themeIndex]) {
                         //Remove theme from theme-selection modal
                         childNodes[themeIndex].remove();
                     }

@@ -9,6 +9,9 @@ class ThemeManager {
      *@constructor
      *@param {Object}options An object containing some UGSM theme paths and a selected theme
      */
+     //@TODO
+     //Destructure options object and assign default values
+     //inside the constructor signature
     constructor(options) {
         this._themes = [];
         this._selectedTheme = null;
@@ -121,6 +124,9 @@ class ThemeManager {
             let styleTag = document.getElementById('external-theme');
             if (!styleTag) {
                 styleTag = document.createElement('link');
+                //@TODO
+                //See if this works
+                //Object.assign(styleTag,{rel:'stylesheet',href:themeUrl,id:'external-theme'});
                 styleTag.rel = 'stylesheet';
                 styleTag.href = themeUrl;
                 styleTag.id = 'external-theme';
